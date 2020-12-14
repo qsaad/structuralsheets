@@ -1,7 +1,7 @@
 <template>
-   <div class="mx-3">
-          <div class="subtitle is-5 my-0" v-html="title"></div>
-          <div>
+   <div>
+          <div class="subtitle is-7 my-0" v-html="title"></div>
+          <div class="input-content">
             <slot></slot>
         </div>
 </template>
@@ -29,19 +29,9 @@ export default {
 </script>
 
 <style scoped>
-.output-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.output-value{
-  display:flex;
-  flex-direction:row;
-  flex-wrap: nowrap;
-  justify-content:space-between;
+.input-content {
   max-width: 150px;
-  min-width: 125px;
   margin: auto;
 }
+
 </style>
