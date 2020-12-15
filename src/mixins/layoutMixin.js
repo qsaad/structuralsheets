@@ -1,3 +1,9 @@
+import ModuleLayout from "../components/layout/ModuleLayout.vue";
+import InputGroup from "../components/layout/InputGroup"
+import OutputValues from "../components/layout/OutputValues"
+import OutputChecks from "../components/layout/OutputChecks"
+import CalculationGroup from "../components/layout/CalculationGroup"
+
 import CustomCard from "../components/layout/CustomCard.vue";
 import CustomTextField from "../components/layout/CustomTextField.vue";
 import CustomSelect from "../components/layout/CustomSelect.vue";
@@ -12,6 +18,8 @@ import CustomParamsList from "../components/layout/CustomParamsList"
 
 export default{
   components: {
+    ModuleLayout,
+    InputGroup, OutputValues, OutputChecks, CalculationGroup,
     CustomCard, CustomTextField, CustomSelect,
     CustomCheckNotification, CustomValueNotification, CustomTextNotification, 
     CustomInteractionNotification, CustomWarningMessages, CustomPropertyTag, CustomParamsList

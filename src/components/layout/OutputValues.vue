@@ -14,7 +14,7 @@
 <script>
 import { decimal } from "../../utils/mathLib";
 export default {
-  name: "OutputGroup",
+  name: "OutputValues",
   props: {
     title:{type:String,default:''},
     items:{type:Array,default:[]},
