@@ -155,6 +155,7 @@ import MasonrySectionCapacity from "./components/masonry/MasonrySectionCapacity.
 import MasonryLintel from "./components/masonry/MasonryLintel.vue";
 import MasonryPier from "./components/masonry/MasonryPier.vue";
 import MasonryBearingWall from "./components/masonry/MasonryBearingWall.vue";
+import MasonryAnchorBolt from "./components/masonry/MasonryAnchorBolt.vue";
 //CONCRETE
 import ConcreteSectionCapacity from "./components/concrete/ConcreteSectionCapacity.vue";
 //SNOW
@@ -178,7 +179,7 @@ export default {
     SingleSimpleBeam, CantileverBeam, FixedBeam, SingleOverhangBeam, LiveLoadReduction,
     SteelShapeProperties, SteelShapeCapacity, SteelBeamDesign, SteelLintelDesign,
     Gravity,
-    Masonry, MasonryLapSplice, MasonrySectionCapacity, MasonryLintel, MasonryPier, MasonryBearingWall,
+    Masonry, MasonryLapSplice, MasonrySectionCapacity, MasonryLintel, MasonryPier, MasonryBearingWall, MasonryAnchorBolt,
     ConcreteSectionCapacity,
     SnowDrift, SnowFlatRoof,
     WindPressure,
@@ -208,6 +209,7 @@ export default {
         { name: "MasonryLintel", path:"masonry", title: "Masonry Lintel" },
         { name: "MasonryPier", path:"masonry", title: "Masonry Pier" },
         { name: "MasonryBearingWall", path:"masonry", title: "Masonry Bearing Wall" },
+        { name: "MasonryAnchorBolt", path:"masonry", title: "Masonry Anchor Bolt" },
         { name: "ConcreteSectionCapacity", path:"masonry", title: "Concrete Section Capacity" },
         { name: "SnowDrift", path:"snow", title: "Snow Drift" },
         { name: "SnowFlatRoof", path:"snow", title: "Snow Flat Roof" },

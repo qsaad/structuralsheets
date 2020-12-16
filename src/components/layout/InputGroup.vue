@@ -1,6 +1,6 @@
 <template>
    <div>
-          <div class="subtitle is-7 my-0" v-html="title"></div>
+          <div class="subtitle is-7 my-0 has-text-weight-bold" v-html="title"></div>
           <div class="input-content">
             <slot></slot>
         </div>
