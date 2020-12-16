@@ -37,7 +37,7 @@
 
       <input-group title="ANCHOR">
          <custom-select :label="`Dia (in)`">
-          <select v-model.number="anchorBoltDia">
+          <select v-model="anchorBoltDia">
             <option v-for="(item, i) in anchorBoltDiaList" :key="i">{{ item }}</option>
           </select>
 			  </custom-select>
@@ -91,6 +91,11 @@
     <template v-slot:graphics>
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
+
+        <line x1="0"  y1="150" x2="300"   y2="150" style="stroke:#006600;"/>
+        <line x1="150"  y1="0" x2="150"   y2="300" style="stroke:#006600;"/>
+
+        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
       </svg>
 		</template>
   </module-layout>
@@ -140,12 +145,15 @@ export default {
       ]
     },//GENERATE WARNINGS
     design(){
+
+      this.diameter(this.anchorBoltDia)
       let objData = {
         method: this.method,
         fm: this.fm,
         thickness: this.thickness,
         Fya: this.Fya,
-        da: this.anchorSize(this.anchorBoltDia).db,
+        da: this.diameter(this.anchorBoltDia),
+        //da: this.anchorSize(this.anchorBoltDia).db,
         location: this.location,
         lb: this.lb,
         lbe: this.lbe,
@@ -188,7 +196,10 @@ export default {
     },// DESIGN
   }, //COMPUTED
   methods: {
-  
+    diameter(size){
+      let numArr = size.split("/")
+      return parseFloat(numArr[0])/parseFloat(numArr[1])
+    }
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
