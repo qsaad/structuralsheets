@@ -12,10 +12,10 @@
     <template v-slot:inputs>
       <input-group title="LOADS">
         <custom-text-field label="V (lb)">
-          <input type="text" v-model="V" class="input is-small">
+          <input type="text" v-model.number="V" class="input is-small">
         </custom-text-field>
         <custom-text-field label="T (lb)">
-          <input type="text" v-model="T" class="input is-small">
+          <input type="text" v-model.number="T" class="input is-small">
         </custom-text-field>
       </input-group><!-- INPUT-GROUP -->
 
@@ -74,6 +74,7 @@
     <template v-slot:outputs>
       {{design}}
       <output-values title="STRENGTH" :items="outputs"></output-values>
+      <output-checks title="CHECK" :items="checks"></output-checks>
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- CALCULATIONS -->
@@ -88,7 +89,7 @@
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300" v-if="L > 10">
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
       </svg>
 		</template>
@@ -119,6 +120,7 @@ export default {
       location: 'Top',
       Fya: 36,
       outputs: [],
+      checks:[],
       tensionParams: [],
       tensionAreas: [],
       shearParams: [],  
@@ -133,7 +135,6 @@ export default {
       this.warnings = [
         {type: 'Load', status: this.V < 0, title: "V cannot be negative"},
         {type: 'Load', status: this.T < 0, title: "T cannot be negative"},
-        {type: 'Anchor', status: this.da < 0, title: "Dia cannot be negative"},
         {type: 'Layout', status: this.lb < 0, title: "Embed cannot be negative"},
         {type: 'Layout', status: this.lbe < 0, title: "Edge Dist cannot be negative"},
       ]
@@ -155,6 +156,11 @@ export default {
       this.outputs = [
         {name:'V', value: obj.V(), decimal: 0, unit: 'lb'},
         {name:'T', value: obj.T(), decimal: 0, unit: 'lb'},
+      ]
+
+      this.checks = [
+        {name:'V', actual: this.V, allowable: obj.V(), decimal: 0, unit: 'lb'},
+        {name:'T', actual: this.T, allowable: obj.T(), decimal: 0, unit: 'lb'},
       ]
 
       this.tensionParams = [

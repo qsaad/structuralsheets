@@ -9,8 +9,9 @@
         <span class="has-background-link-light is-flex-grow-1" v-html="symbol(item.actual, item.allowable)"></span>
         <span class="has-background-link-light has-text-weight-bold is-flex-grow-1">{{ formatValue(item.allowable, item.decimal) }}</span>
         <span class="icon end-radius" style="min-width : 40px; height: 30px" :class="checkClass(item.actual, item.allowable)">
-          <i class="fas fa-check" v-if="item.actual <= item.allowable"></i>
-          <i class="fas fa-times" v-else></i>
+          <!-- <i class="fas fa-check" v-if="item.actual <= item.allowable"></i>
+          <i class="fas fa-times" v-else></i> -->
+          <i :class="status(item.actual, item.allowable)" ></i>
         </span>
       </div>
     </div>
@@ -42,7 +43,7 @@ export default {
       return actual <= allowable ? '<' : '>'
     },
     status(actual, allowable){
-      return actual <= allowable ? 'Ok' : 'Fail'
+      return actual <= allowable ? 'fas fa-check' : 'fas fa-times'
     },
     checkClass(actual, allowable){
       return actual <= allowable ? 'has-background-info' : 'has-background-danger'
