@@ -15,7 +15,7 @@
     <div class="calculation-container mt-4 px-2">
       <slot name="calculations"></slot>
     </div>  
-    <div class="graphics-container mt-4 px-2">
+    <div class="graphics-container mt-4 px-2 pb-4">
       <slot name="graphics"></slot>
     </div>
   </div>

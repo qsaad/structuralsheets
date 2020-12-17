@@ -89,13 +89,77 @@
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
+      <!-- ++++++++++++++++++++++++++ -->
+      <!-- SIDE VIEW -->
+      <!-- ++++++++++++++++++++++++++ -->
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
+        <!-- BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-
-        <line x1="0"  y1="150" x2="300"   y2="150" style="stroke:#006600;"/>
-        <line x1="150"  y1="0" x2="150"   y2="300" style="stroke:#006600;"/>
-
-        <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        <!-- X AXIS -->
+        <!-- <line x1="0"  y1="150" x2="300"   y2="150" stroke-width="1" style="stroke:#006600;"/> -->
+        <!-- Y AXIS -->
+        <!-- <line x1="150"  y1="0" x2="150"   y2="300" stroke-width="1" style="stroke:#006600;"/> -->
+        <!-- X GRID LINES -->
+        <!-- <line x1="0"  :y1="i*10" x2="300"   :y2="i*10" stroke-width="1" style="stroke:#e6f5ea;" v-for="i in 30"/> -->
+        <!-- Y GRID LINES -->
+        <!-- <line :x1="i*10"  y1="0" :x2="i*10"   y2="300" stroke-width="1" style="stroke:#e6f5ea;" v-for="i in 30"/> -->
+       
+        <!-- HATCH PATTERN -->
+        <pattern id="diagonalHatch" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="20" stroke-width="1" stroke="black"/>
+          <line x1="0" y1="0" x2="20" y2="0" stroke-width="1" stroke="black"/>
+        </pattern>
+        <!-- BLOCK WALL -->
+        <rect x="10" :y="150 - t/2*SF" width="280" :height="t*SF" fill="url(#diagonalHatch)" stroke="#000" stroke-width="2" fill-opacity="0.2"></rect>
+        <!-- PULL OUT CONE -->
+        <circle cx="150" :cy="150 + t/2*SF - lbe*SF" :r="lb*SF" stroke="blue" stroke-width="1" stroke-dasharray="10 5" fill="yellow" fill-opacity="0.2" />
+        <!-- ANCHOR -->
+        <circle cx="150" :cy="150 + t/2*SF - lbe*SF" :r="da*SF" stroke="black" stroke-width="1"  fill="black" fill-opacity="1" />
+        <!-- SHEAR ARROW -->
+        <line x1="150"  y1="10" x2="150"   y2="80" stroke-width="3" stroke="black"/>
+        <line x1="150"  y1="80" x2="140"   y2="70" stroke-width="3" stroke="black"/>
+        <line x1="150"  y1="80" x2="160"   y2="70" stroke-width="3" stroke="black"/>
+        <text x="160" y="40">V = {{V}} k</text>
+        <!-- TITLE -->
+        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="30">TOP VIEW</text>
+      </svg>
+      <!-- ++++++++++++++++++++++++++ -->
+      <!-- TOP VIEW -->
+      <!-- ++++++++++++++++++++++++++ -->
+       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
+        <!-- BORDER -->
+        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
+        <!-- X AXIS -->
+        <!-- <line x1="0"  y1="150" x2="300"   y2="150" stroke-width="1" style="stroke:#006600;"/> -->
+        <!-- Y AXIS -->
+        <!-- <line x1="150"  y1="0" x2="150"   y2="300" stroke-width="1" style="stroke:#006600;"/> -->
+        <!-- X GRID LINES -->
+        <!-- <line x1="0"  :y1="i*10" x2="300"   :y2="i*10" stroke-width="1" style="stroke:#e6f5ea;" v-for="i in 30"/> -->
+        <!-- Y GRID LINES -->
+        <!-- <line :x1="i*10"  y1="0" :x2="i*10"   y2="300" stroke-width="1" style="stroke:#e6f5ea;" v-for="i in 30"/> -->
+       
+        <!-- HATCH PATTERN -->
+        <pattern id="diagonalHatch" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="20" stroke-width="1" stroke="black"/>
+          <line x1="0" y1="0" x2="20" y2="0" stroke-width="1" stroke="black"/>
+        </pattern>
+        <!-- BLOCK WALL -->
+        <rect :x="150 - t/2*SF" y="80" :width="t*SF" height="150" fill="url(#diagonalHatch)" stroke="#000" stroke-width="2" fill-opacity="0.2"></rect>
+        <!-- ANCHOR -->
+        <line :x1="150 - t/2*SF + lbe*SF"  y1="75" :x2="150 - t/2*SF + lbe*SF"   :y2="80 + lb*SF" :stroke-width="da*SF" stroke="black"/>
+        <!-- SHEAR ARROW -->
+        <line x1="10"  y1="80" x2="100"  y2="80" stroke-width="3" stroke="black"/>
+        <line x1="10"  y1="80" x2="20"   y2="90" stroke-width="3" stroke="black"/>
+        <line x1="10"  y1="80" x2="20"   y2="70" stroke-width="3" stroke="black"/>
+        <text x="10" y="60">V = {{V}} k</text>
+        <!-- TENSION ARROW -->
+        <line x1="150"  y1="10" x2="150"  y2="60" stroke-width="3" stroke="black"/>
+        <line x1="150"  y1="10" x2="140"   y2="20" stroke-width="3" stroke="black"/>
+        <line x1="150"  y1="10" x2="160"   y2="20" stroke-width="3" stroke="black"/>
+        <text x="170" y="30">T = {{T}} k</text>
+        <!-- TITLE -->
+        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="30">SIDE VIEW</text>
+        
       </svg>
 		</template>
   </module-layout>
@@ -119,6 +183,8 @@ export default {
     return {
       V: 100,
       T: 100,
+      da: this.diameter(this.anchorBoltDia),
+      t: this.thickness - 0.375,
       lb: 4,
       lbe: 3.8125,
       locationList: ['Top', 'Side'],
@@ -130,6 +196,7 @@ export default {
       tensionAreas: [],
       shearParams: [],  
       shearAreas: [],
+      SF: 10
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -145,15 +212,16 @@ export default {
       ]
     },//GENERATE WARNINGS
     design(){
+      //NEED FOR GRAPHICS
+      this.da = this.diameter(this.anchorBoltDia)
+      this.t =  this.thickness - 0.375
 
-      this.diameter(this.anchorBoltDia)
       let objData = {
         method: this.method,
         fm: this.fm,
         thickness: this.thickness,
         Fya: this.Fya,
         da: this.diameter(this.anchorBoltDia),
-        //da: this.anchorSize(this.anchorBoltDia).db,
         location: this.location,
         lb: this.lb,
         lbe: this.lbe,
@@ -198,7 +266,7 @@ export default {
   methods: {
     diameter(size){
       let numArr = size.split("/")
-      return parseFloat(numArr[0])/parseFloat(numArr[1])
+      return numArr.length == 2 ? parseFloat(numArr[0])/parseFloat(numArr[1]) : 1
     }
   } //METHODS
 }; //EXPORT DEFAULT
