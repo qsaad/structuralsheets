@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, first, last, compact} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, first, last, compact, filter} from 'lodash'
 
 export default class SingleOverhangBeam {
     constructor({ L=20, Lo=1, E=29000, I=100, w=1, P="",a=""}){
@@ -190,10 +190,14 @@ export default class SingleOverhangBeam {
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
     xm(){
-        let index = findIndex(this.Mx(), (x) => x == this.Mmax())
-        let arr = this.Lx()
+        //let index = findIndex(this.Mx(), (x) => x == this.Mmax())
+        let arrM = filter(this.Mx(), x => x > 0)
+        let maxVal = Math.max(...arrM)
+        let index = findIndex(arrM, x => x == maxVal)
 
-        return arr[index]
+        let arrX = this.Lx()
+
+        return arrX[index]
     }
 
     xc(){

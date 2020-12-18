@@ -4,7 +4,7 @@
     <!-- HEADER -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:header>
-      MODULE NAME
+      SIMPLE BEAM
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!--INPUTS -->
@@ -45,37 +45,45 @@
       <output-values title="DEFLECTION" :items="deflection"></output-values>
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
-    <!-- CALCULATIONS -->
-    <!-- ++++++++++++++++++++++++++ -->
-    <!-- <template v-slot:calculations>
-      <calculation-group title="STRENGTH" :items="output1"></calculation-group>
-      <calculation-group title="STRENGTH" :items="output1"></calculation-group>
-      <calculation-group title="STRENGTH" :items="output1"></calculation-group>
-      <calculation-group title="STRENGTH" :items="output1"></calculation-group>
-      <calculation-group title="STRENGTH" :items="output1"></calculation-group>
-		</template> -->
-    <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- BORDER -->
+        <!-- SVG BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        
-         <rect x="30" :y="130-w*SF" width="240" :height="10+w*SF" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
+        <!-- UNIFORM LOAD -->
+        <rect x="30" :y="130-w*SF" width="240" :height="10+w*SF" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
         <!-- LEFT SUPPORT -->
         <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
+        <!-- LEFT REACTION -->
         <text x="32.5" y="180" text-anchor="middle">{{(shear[0].value).toFixed(2)}} k</text>
         <!-- RIGHT SUPPORT -->
         <circle cx="267.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
+        <!-- RIGHT REACTION -->
         <text x="267.5" y="180" text-anchor="middle">{{(shear[0].value).toFixed(2)}} k</text>
-         <!-- MOMENT -->
-        <text x="150" y="180" text-anchor="middle">M = {{(flexure[0].value).toFixed(2)}} k-ft</text>
+        <!-- DEFLECTION -->
+        <text x="150" y="180" text-anchor="middle">&delta; = {{(deflection[0].value).toFixed(4)}} in</text>
+      </svg>
 
-        <text x="150" y="200" text-anchor="middle">&delta; = {{(deflection[0].value).toFixed(4)}} in</text>
-
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
+        <!-- SVG BORDER -->
+        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
+        <!-- BEAM SPAN -->
+        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
+        <!-- LEFT SUPPORT -->
+        <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
+        <!-- RIGHT SUPPORT -->
+        <circle cx="267.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
+        <!-- MOMENT -->
+        <text x="150" y="140" text-anchor="middle">{{(flexure[0].value).toFixed(2)}}</text>
+        <!-- LEFT DIAGONAL -->
+        <line x1="30"  y1="150" x2="150"   :y2="150+Mmax*SF" stroke-width="2" stroke="blue"/>
+        <!-- RIGHT DIAGONAL -->
+        <line x1="150"  :y1="150+Mmax*SF" x2="270"   y2="150" stroke-width="2" stroke="blue"/>
+        <!-- TITLE -->
+        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT (k-ft)</text>
       </svg>
 
       
@@ -109,7 +117,8 @@ export default {
       shear:[],
       deflection:[],
       //GRAPHICS
-      SF: 10
+      SF: 10,
+      Mmax: 0
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -144,6 +153,23 @@ export default {
         {name:'D', value: obj.Dmax(), decimal: 4, unit: 'in'},
       ]
 
+      this.Mmax = obj.Mmax()
+
+      switch(true){
+        case (this.Mmax < 10):
+          this.SF = 5
+          break
+        case (this.Mmax < 40):
+          this.SF = 1
+          break
+        case (this.Mmax < 100):
+          this.SF = 0.5
+          break
+        case (this.Mmax > 100):
+          this.SF = 0.25
+          break
+      }
+
       // return {
       //   M: obj.Mmax().toFixed(2),
       //   V: obj.Vmax().toFixed(2),
@@ -153,7 +179,9 @@ export default {
     },//ANALYSIS
   }, //COMPUTED
   methods: {
-   
+    formatNumber(num, deci){
+      return decimal(num, deci)
+    }
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
