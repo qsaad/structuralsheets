@@ -1,15 +1,16 @@
 import {concat, range, forEach, zipWith, split, map, toNumber, findIndex} from 'lodash'
 
 export default class SimpleBeam {
-    constructor({ L=20, E=29000, I=100, w=1, P="",a=""}){
+    constructor({ L=20, E=29000, I=100, w=1, PL=[]}){
         this.L = L
         this.E = E
         this.I = I
         this.w = w  //UNIFORM LOAD
         
         //POINT LOAD
-        this.P = P  //POINT LOAD STRING
-        this.a = a  //POINT LOAD DISTANCES STRING
+        this.PL = PL
+        //this.P = P  //POINT LOAD STRING
+        //this.a = a  //POINT LOAD DISTANCES STRING
 
         this.inc = 0.25
     }
@@ -21,18 +22,18 @@ export default class SimpleBeam {
     }
 
     //POINT LOAD - CONVERT STRING TO ARRAY
-    PL(){
-        let P = map(split(this.P,','), (x) => toNumber(x))
-        let a = map(split(this.a,','), (x) => toNumber(x))
+    // PL(){
+    //     let P = map(split(this.P,','), (x) => toNumber(x))
+    //     let a = map(split(this.a,','), (x) => toNumber(x))
 
-        return zipWith(P, a,(P,a)=>{
-            return {P:P,a:a}
-        })
-    }
+    //     return zipWith(P, a,(P,a)=>{
+    //         return {P:P,a:a}
+    //     })
+    // }
 
     //LOADING DIAGRAM
     plotL(){
-        return map(this.PL(), (item)=>{
+        return map(this.PL, (item)=>{
             return {x:item.a,y:item.P}
         })
     }
@@ -46,7 +47,7 @@ export default class SimpleBeam {
         let L = this.L
 
         Ri = w*L/2
-        forEach(this.PL(), (Pi,j)=>{
+        forEach(this.PL, (Pi,j)=>{
             let P = Pi.P
             let a = Pi.a
             let b = L - Pi.a
@@ -62,7 +63,7 @@ export default class SimpleBeam {
         let L = this.L
 
         Ri = w*L/2
-        forEach(this.PL(), (Pi,j)=>{
+        forEach(this.PL, (Pi,j)=>{
             let P = Pi.P
             let a = Pi.a
             Ri =  Ri + P*a/L
@@ -82,7 +83,7 @@ export default class SimpleBeam {
 
         forEach(this.Lx(), (x,i) =>{
             Vi = w * (L/2 - x)
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a
@@ -121,7 +122,7 @@ export default class SimpleBeam {
        
         forEach(this.Lx(), (x,i) =>{
             Mi = this.w * x / 2 *(L - x)
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a
@@ -149,7 +150,7 @@ export default class SimpleBeam {
         let index = findIndex(this.Mx(), (x) => x == this.Mmax())
         let arr = this.Lx()
 
-        return arr[index]
+        return parseFloat(arr[index])
     }
 
     //FLEXURE PLOT COORDINATE (X,M)
@@ -174,7 +175,7 @@ export default class SimpleBeam {
         forEach(this.Lx(), (x,i) =>{
             Di = (w*x*(Math.pow(L,3)-2*L*Math.pow(x,2)+Math.pow(x,3))*1728)/(24*E*I)
             
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a

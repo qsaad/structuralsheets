@@ -1,6 +1,6 @@
 <template>
   <div class="field">
-    <label class="label is-small has-text-left has-text-weight-light has-text-weight-light" v-html="label">
+    <label class="label is-small has-text-left has-text-weight-light" v-html="label">
     </label>
     
     <div class="control">
