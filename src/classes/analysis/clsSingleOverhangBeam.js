@@ -1,7 +1,7 @@
 import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, first, last, compact, filter} from 'lodash'
 
 export default class SingleOverhangBeam {
-    constructor({ L=20, Lo=1, E=29000, I=100, w=1, P="",a=""}){
+    constructor({ L=20, Lo=1, E=29000, I=100, w=1,  PL=[]}){
         this.L = L
         this.Lo = Lo
         this.E = E
@@ -9,8 +9,9 @@ export default class SingleOverhangBeam {
         this.w = w  //UNIFORM LOAD
         
         //POINT LOAD
-        this.P = P  //POINT LOAD STRING
-        this.a = a  //POINT LOAD DISTANCES STRING
+        this.PL = PL
+        // this.P = P  //POINT LOAD STRING
+        // this.a = a  //POINT LOAD DISTANCES STRING
 
         this.inc = 0.25
     }
@@ -28,18 +29,18 @@ export default class SingleOverhangBeam {
     }
 
     //POINT LOAD - CONVERT STRING TO ARRAY
-    PL(){
-        let P = map(split(this.P,','), (x) => toNumber(x))
-        let a = map(split(this.a,','), (x) => toNumber(x))
+    // PL(){
+    //     let P = map(split(this.P,','), (x) => toNumber(x))
+    //     let a = map(split(this.a,','), (x) => toNumber(x))
 
-        return zipWith(P, a,(P,a)=>{
-            return {P:P,a:a}
-        })
-    }
+    //     return zipWith(P, a,(P,a)=>{
+    //         return {P:P,a:a}
+    //     })
+    // }
 
      //LOADING DIAGRAM
      plotL(){
-        return map(this.PL(), (item)=>{
+        return map(this.PL, (item)=>{
             return {x:item.a,y:item.P}
         })
     }
@@ -55,7 +56,7 @@ export default class SingleOverhangBeam {
         let Lo = this.Lo
 
         Ri = w*(Math.pow(L,2)-Math.pow(Lo,2))/(2*L)
-        forEach(this.PL(), (Pi,j)=>{
+        forEach(this.PL, (Pi,j)=>{
             let P = Pi.P
             let a = Pi.a
             let b = L - Pi.a
@@ -77,7 +78,7 @@ export default class SingleOverhangBeam {
         let Lo = this.Lo
 
         Ri = w*(Math.pow(L+Lo,2))/(2*L)
-        forEach(this.PL(), (Pi,j)=>{
+        forEach(this.PL, (Pi,j)=>{
             let P = Pi.P
             let a = Pi.a
             if(a < L){
@@ -109,7 +110,7 @@ export default class SingleOverhangBeam {
                 Vi = w*(Lo - (x - L))
             }
             
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a
@@ -155,7 +156,7 @@ export default class SingleOverhangBeam {
             else{
                 Mi = w*(Math.pow(Lo-(x-L),2))/2
             }
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a
@@ -239,7 +240,7 @@ export default class SingleOverhangBeam {
             }
             
             
-            forEach(this.PL(), (Pi,j)=>{
+            forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a
                 let b = L - a

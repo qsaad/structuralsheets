@@ -156,7 +156,7 @@ export default {
       PL: [],
       editedPL: {id: 0,P: 0,a: 0},
       editedIndex: -1,
-      warning: [],
+      warnings: [],
       flexure:[],
       shear:[],
       deflection:[],

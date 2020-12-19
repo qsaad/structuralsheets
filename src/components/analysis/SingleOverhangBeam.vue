@@ -22,6 +22,45 @@
         </custom-text-field>
       </input-group><!-- INPUT-GROUP -->
 
+      <input-group title="POINT LOADS">
+        <label class="label is-small has-text-left has-text-weight-light">P(k) @ a(ft)</label>
+        <div class="field has-addons">
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="P (k)" v-model.number="P">
+          </div>
+          <div class="control">
+            <input class="input is-small" type="text" placeholder="a (ft)" v-model.number="a">
+          </div>
+          <div class="control">
+            <a class="button is-info is-small" @click="addPL" v-if="editedIndex < 0">
+              <span class="icon has-text-white">
+                <i class="fas fa-plus"></i>
+              </span>
+            </a>
+            <a class="button is-info is-small" @click="updatePL" v-else>
+              <span class="icon has-text-white">
+                <i class="fas fa-pen"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+        <div>
+          <a class="button is-info is-small" @click="cancelEdit" v-if="editedIndex > 0">
+              Cancel Update
+          </a>
+        </div>
+        <div v-for="item in sortedPL">
+          <div class="control pb-1 is-flex is-justify-content-space-between is-clickable" >
+              <div class="tag is-info-light is-flex is-justify-content-space-evenly" style="min-width: 120px;" @click.prevent="editPL(item)">
+                <span> {{ item.P }} k</span>
+                <span> @ </span>
+                <span> {{ item.a }} ft</span>
+              </div>
+              <button class="delete is-danger" @click.prevent="deletePL(item)"></button>
+          </div>
+        </div>
+      </input-group><!-- INPUT-GROUP -->
+
       <input-group title="PARAMETERS">
         <custom-text-field :label="`Ix (in^4)`">
 				  <input type="text" class="input is-small" v-model.number="Ix">
@@ -54,8 +93,16 @@
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <!-- BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
+         <!-- POINT LOAD -->
+        <g v-for="item in PL" >
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" stroke-width="2" stroke="green"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" stroke-width="2" stroke="green"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" stroke-width="2" stroke="green"/>
+          <text :x="30 + (item.a/(L+Lo))*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
+          <text :x="30 + (item.a/(L+Lo))*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
+        </g>
         <!-- UNIFORM LOAD -->
-        <rect x="30" :y="130-w*SF" width="240" :height="10+w*SF" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
+        <rect x="30" y="130" width="240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
         <!-- LEFT SUPPORT -->
@@ -66,10 +113,7 @@
         <circle :cx="(L)/(L+Lo) * 240 + 30 - 2.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
         <!-- RIGHT REACTION -->
         <text :x="(L)/(L+Lo) * 240 + 30 - 2.5" y="180" text-anchor="middle">{{ formatNumber(shear[1].value,2) }} k</text>
-        
-        <!-- MOMENT -->
-        <!-- <text x="150" y="180" text-anchor="middle">M = {{(flexure[0].value).toFixed(2)}} k-ft</text> -->
-        <!-- DEFLECTION -->
+        <!-- DEFLECTION VALUES -->
         <text :x="((L)/(L+Lo) * 240)*0.5 + 30 - 2.5" y="200" text-anchor="middle">{{(deflection[0].value).toFixed(2)}} in</text>
         <text x="290" y="200" text-anchor="end">{{(deflection[0].value).toFixed(2)}} in</text>
       </svg>
@@ -77,32 +121,26 @@
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <!-- BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-       
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
         <!-- LEFT SUPPORT -->
         <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        
         <!-- RIGHT SUPPORT -->
         <circle :cx="(L)/(L+Lo) * 240 + 30 - 2.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-
-        <!-- LEFT DIAGONAL -->
-        <line x1="30"  y1="150" :x2="xm/(L+Lo) * 240 + 30"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/>
-         <!-- MIDDLE DIAGONAL -->
-        <line :x1="xm/(L+Lo) * 240 + 30"  :y1="150 + Ms*SF" :x2="(L)/(L+Lo) * 240 + 30"   :y2="150 - Mc*SF" stroke-width="2" stroke="blue"/>
-        <!-- RIGHT DIAGONAL -->
-        <line :x1="(L)/(L+Lo) * 240 + 30"  :y1="150 - Mc*SF" x2="270"   y2="150" stroke-width="2" stroke="blue"/>
+        <!-- MOMENT PLOT -->
+        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
         <!-- SPAN MOMENT -->
         <text :x="((xm)/(L+Lo) * 240) + 30 - 2.5" y="140" text-anchor="middle">{{ formatNumber(flexure[0].value,2) }}</text>
         <!-- CANTILEVER MOMENT -->
         <text :x="(L)/(L+Lo) * 240 + 30 - 2.5" y="180" text-anchor="middle">{{ formatNumber(flexure[1].value,2) }} </text>
-
+        <!-- MAXIMUM SPAN MOMENT POINT VALUE -->
         <text x="150" y="220" text-anchor="middle" font-size="12">xm = {{ xm }} ft</text>
+        <!-- INFLEXION POINT VALUE -->
         <text x="150" y="240" text-anchor="middle" font-size="12">xc = {{ xc }} ft</text>
+        <!-- TITLE -->
         <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT (k-ft)</text>
       </svg>
 
-      
 		</template>
   </module-layout>
 </template>
@@ -126,9 +164,12 @@ export default {
       w: 1,
       Ix: 100,
       E: 29000,
-      P : [],
-      a : [],
-      warning: [],
+      P: 0,
+      a: 0,
+      PL: [],
+      editedPL: {id: 0,P: 0,a: 0},
+      editedIndex: -1,
+      warnings: [],
       flexure:[],
       shear:[],
       deflection:[],
@@ -141,7 +182,8 @@ export default {
       RL: 0,
       RR: 0,
       Ds: 0,
-      Dc: 0
+      Dc: 0,
+      plotM: []
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -151,7 +193,10 @@ export default {
     generateWarnings(){
       this.warnings = [
         {type: 'Length', status: this.L < 0, title: "L cannot be negative"},
+        {type: 'Length', status: this.Lo <= 0, title: "Lo cannot be negative/zero"},
         {type: 'Load', status: this.w < 0, title: "w cannot be negative"},
+        {type: 'Load', status: this.a > this.L + this.Lo, title: "a cannot be greater than L + L"},
+        {type: 'Load', status: this.P < 0, title: "P cannot be negative"},
       ]
     },//GENERATE WARNINGS
     design(){
@@ -161,8 +206,7 @@ export default {
         E: this.E,
         I: this.Ix, 
         w: this.w, 
-        P: this.P,
-        a: this.a
+        PL: this.PL
       }
 
       let obj = new SingleOverhangBeam(objData)
@@ -188,6 +232,7 @@ export default {
       this.Dc = decimal(obj.Dc(),4)
       this.xm = decimal(obj.xm(),2)
       this.xc = decimal(obj.xc(),2)
+      this.plotM = obj.plotM()
 
       switch(true){
         case (Math.max(Math.abs(this.Ms), Math.abs(this.Mc)) < 10):
@@ -206,13 +251,51 @@ export default {
 
 
     },//ANALYSIS
-   
+    sortedPL(){
+      return this.PL.sort((a,b) => a.a - b.a)
+    }//SORTED PL
  
   }, //COMPUTED
   methods: {
     formatNumber(num, deci){
       return decimal(num, deci)
-    }
+    },
+    plotPath(x, y, plotArr){
+      let XF = 240/(this.L + this.Lo)
+      let YF = this.SF
+      let pathStr = `M ${x} ${y}`
+    
+      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
+
+      return pathStr
+    },//MOMENT PATH
+    addPL(){
+      let id = Math.floor(Math.random() * 10000)
+      this.PL.push({id: id, P: this.P, a: this.a})
+      this.P = 0
+      this.a = 0
+    },//ADD PL
+    editPL(item){
+      this.editedIndex = item.id
+      this.editedPL = Object.assign({}, item)
+      this.P = this.editedPL.P
+      this.a = this.editedPL.a
+    },//EDIT PL
+    cancelEdit(){
+      this.P = 0
+      this.a = 0
+      this.editedIndex = -1
+      this.editedPL = {id: 0, P: 0, a: 0}
+    },//CANCEL EDIT
+    updatePL(){
+      let index = this.PL.findIndex(x => x.id == this.editedIndex)
+      this.PL.splice(index, 1, {...this.editedPL, P: this.P, a: this.a})
+      this.cancelEdit()
+    },//UPDATE PL
+    deletePL(item){
+      let index = this.PL.findIndex(x => x.id == item.id)
+      this.PL.splice(index,1)
+    },//DELETE PL
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
