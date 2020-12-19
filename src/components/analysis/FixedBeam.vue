@@ -112,6 +112,8 @@
         <text x="267.5" y="180" text-anchor="middle">{{ formatNumber(RR, 2) }} k</text>
         <!-- DEFLECTION VALUE -->
         <text x="150" y="200" text-anchor="middle">&delta; = {{(deflection[0].value).toFixed(4)}} in</text>
+        <!-- DEFLECTION VALUE -->
+        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">LOADS</text>
       </svg>
 
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
@@ -119,22 +121,27 @@
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
+        
         <!-- LEFT VERTICAL -->
-        <line x1="30"  y1="150" x2="30"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/>
+        <!-- <line x1="30"  y1="150" x2="30"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/> -->
         <!-- LEFT SLOPE -->
-        <line x1="30"  :y1="150 + Mend*SF"  x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/>
+        <!-- <line x1="30"  :y1="150 + Mend*SF"  x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/> -->
         <!-- RIGHT VERTICAL -->
-        <line x1="270"  y1="150" x2="270"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/>  
+        <!-- <line x1="270"  y1="150" x2="270"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/>   -->
         <!-- RIGHT SLOPE -->
-        <line x1="270"  :y1="150 + Mend*SF" x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/> 
+        <!-- <line x1="270"  :y1="150 + Mend*SF" x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/>  -->
+        
+        <!-- MOMENT PLOT -->
+        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
+        
         <!-- LEFT MOMENT -->
-        <text x="10" y="180" text-anchor="start">{{ formatNumber(flexure[1].value,2) }} </text>
+        <text x="10" y="180" text-anchor="start">{{ formatNumber(ML, 2) }} </text>
         <!-- SPAN MOMENT -->
-        <text x="150" y="140" text-anchor="middle">{{ formatNumber(flexure[0].value,2) }} </text>
+        <text x="150" y="140" text-anchor="middle">{{ formatNumber(Ms, 2) }} </text>
         <!-- RIGHT MOMENT -->
-        <text x="290" y="180" text-anchor="end">{{ formatNumber(flexure[2].value,2) }} </text>
+        <text x="290" y="180" text-anchor="end">{{ formatNumber(MR, 2) }} </text>
         <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENTS (k-ft)</text>
+        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT DIAGRAM</text>
       </svg>
 
 		</template>
@@ -174,6 +181,8 @@ export default {
       V: 0,
       D: 0,
       Mend: 0,
+      ML: 0,
+      MR: 0,
       Dmax: 0,
       RL: 0,
       RR: 0,
@@ -196,8 +205,7 @@ export default {
         E: this.E,
         I: this.Ix, 
         w: this.w, 
-        P: this.P,
-        a: this.a
+        PL: this.PL
       }
 
       let obj = new FixedBeam(objData)
@@ -218,10 +226,12 @@ export default {
 
       //VALUE FOR GRAPHICS
       
-      this.Ms = obj.Mmax().toFixed(2)
+      this.Ms = obj.Mmax()
       this.V = obj.Vmax().toFixed(2)
       this.D = obj.Dmax().toFixed(4)
       this.Mend = obj.ML()
+      this.ML = obj.ML()
+      this.MR = obj.MR()
       this.RL = obj.RL()
       this.RR = obj.RR()
       this.Dmax = obj.Dmax()
@@ -257,6 +267,8 @@ export default {
       let pathStr = `M ${x} ${y}`
     
       plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
+
+      pathStr += ` L ${(this.L*XF + x)} ${(y)}`
 
       return pathStr
     },//MOMENT PATH
