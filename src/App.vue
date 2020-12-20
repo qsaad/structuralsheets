@@ -137,6 +137,7 @@ import Home from "./components/Home.vue";
 import TemplateGrid from "./components/templates/TemplateGrid.vue";
 //ANALYSIS
 import SingleSimpleBeam from "./components/analysis/SingleSimpleBeam.vue";
+import ProppedBeam from "./components/analysis/ProppedBeam.vue";
 import CantileverBeam from "./components/analysis/CantileverBeam.vue";
 import FixedBeam from "./components/analysis/FixedBeam.vue";
 import SingleOverhangBeam from "./components/analysis/SingleOverhangBeam.vue";
@@ -177,7 +178,7 @@ export default {
     About,
     Home,
     TemplateGrid,
-    SingleSimpleBeam, CantileverBeam, FixedBeam, SingleOverhangBeam, ParapetWall, LiveLoadReduction,
+    SingleSimpleBeam, ProppedBeam, CantileverBeam, FixedBeam, SingleOverhangBeam, ParapetWall, LiveLoadReduction,
     SteelShapeProperties, SteelShapeCapacity, SteelBeamDesign, SteelLintelDesign,
     Gravity,
     Masonry, MasonryLapSplice, MasonrySectionCapacity, MasonryLintel, MasonryPier, MasonryBearingWall, MasonryAnchorBolt,
@@ -194,6 +195,7 @@ export default {
       search: "",
       modules: [
         { name: "TemplateGrid", path:"template", title: "Template Grid" },
+        { name: "ProppedBeam", path:"analysis", title: "Propped Beam" },
         { name: "SingleSimpleBeam", path:"analysis", title: "Single Simple Beam" },
         { name: "CantileverBeam", path:"analysis", title: "Cantilever Beam" },
         { name: "FixedBeam", path:"analysis", title: "Fixed Beam" },

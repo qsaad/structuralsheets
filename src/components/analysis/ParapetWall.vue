@@ -66,7 +66,7 @@
         <rect x="30" y="130" :width="(L)/(L+Lo) * 240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
          <!-- PARAPET LOAD -->
         <rect :x="(L)/(L+Lo) * 240 + 30" y="130 " :width="240 - (L)/(L+Lo) * 240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-if="wo == w"></rect>
-        <rect :x="(L)/(L+Lo) * 240 + 30" :y="130 - 10*wo/w" :width="240 - (L)/(L+Lo) * 240" :height="10+1wo/w" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-if="wo > w"></rect>
+        <rect :x="(L)/(L+Lo) * 240 + 30" :y="130 - 10*w/wo" :width="240 - (L)/(L+Lo) * 240" :height="10+10*w/wo" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-if="wo > w"></rect>
         <rect :x="(L)/(L+Lo) * 240 + 30" :y="130 + 10*(1-wo/w)" :width="240 - (L)/(L+Lo) * 240" :height="10-10*(1-wo/w)" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-else></rect>
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>

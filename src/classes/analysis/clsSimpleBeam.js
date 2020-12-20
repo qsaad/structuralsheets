@@ -119,9 +119,10 @@ export default class SimpleBeam {
         let M = []
         let Mi = 0
         let L = this.L
+        let w = this.w
        
         forEach(this.Lx(), (x,i) =>{
-            Mi = this.w * x / 2 *(L - x)
+            Mi = w * x / 2 *(L - x)
             forEach(this.PL, (Pi,j)=>{
                 let P = Pi.P
                 let a = Pi.a

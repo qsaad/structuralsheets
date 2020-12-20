@@ -9,8 +9,6 @@ export default class FixedBeam {
 
          //POINT LOAD
          this.PL = PL
-        //  this.P = P  //POINT LOAD STRING
-        //  this.a = a  //POINT LOAD DISTANCES STRING
 
          this.inc = 0.25
     }
@@ -20,16 +18,6 @@ export default class FixedBeam {
 
         return map(arr, x => x.toFixed(4))
     }
-
-    //POINT LOAD - CONVERT STRING TO ARRAY
-    // PL(){
-    //     let P = map(split(this.P,','), (x) => toNumber(x))
-    //     let a = map(split(this.a,','), (x) => toNumber(x))
-
-    //     return zipWith(P, a,(P,a)=>{
-    //         return {P:P,a:a}
-    //     })
-    // }
 
     //LOADING DIAGRAM
     plotL(){
