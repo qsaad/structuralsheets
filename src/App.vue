@@ -140,6 +140,7 @@ import SingleSimpleBeam from "./components/analysis/SingleSimpleBeam.vue";
 import CantileverBeam from "./components/analysis/CantileverBeam.vue";
 import FixedBeam from "./components/analysis/FixedBeam.vue";
 import SingleOverhangBeam from "./components/analysis/SingleOverhangBeam.vue";
+import ParapetWall from "./components/analysis/ParapetWall.vue";
 import LiveLoadReduction from "./components/analysis/LiveLoadReduction.vue";
 //STEEL
 import SteelShapeProperties from "./components/steel/SteelShapeProperties.vue";
@@ -176,7 +177,7 @@ export default {
     About,
     Home,
     TemplateGrid,
-    SingleSimpleBeam, CantileverBeam, FixedBeam, SingleOverhangBeam, LiveLoadReduction,
+    SingleSimpleBeam, CantileverBeam, FixedBeam, SingleOverhangBeam, ParapetWall, LiveLoadReduction,
     SteelShapeProperties, SteelShapeCapacity, SteelBeamDesign, SteelLintelDesign,
     Gravity,
     Masonry, MasonryLapSplice, MasonrySectionCapacity, MasonryLintel, MasonryPier, MasonryBearingWall, MasonryAnchorBolt,
@@ -197,6 +198,7 @@ export default {
         { name: "CantileverBeam", path:"analysis", title: "Cantilever Beam" },
         { name: "FixedBeam", path:"analysis", title: "Fixed Beam" },
         { name: "SingleOverhangBeam", path:"analysis", title: "Single Overhang Beam" },
+        { name: "ParapetWall", path:"analysis", title: "Parapet Wall" },
         { name: "LiveLoadReduction", path:"analysis", title: "Live Load Reduction" },
         { name: "SteelShapeProperties", path:"steel", title: "Steel Shape Properties" },
         { name: "SteelShapeCapacity", path:"steel", title: "Steel Shape Capacity" },

@@ -4,7 +4,7 @@
     <!-- HEADER -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:header>
-      SINGLE OVERHANG BEAM
+      PARAPET WALL
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!--INPUTS -->
@@ -14,51 +14,20 @@
         <custom-text-field :label="`Span (ft)`">
 				  <input type="text" class="input is-small" v-model.number="L">
         </custom-text-field>
-        <custom-text-field :label="`Overhang (ft)`">
+        <custom-text-field :label="`Parapet (ft)`">
 				  <input type="text" class="input is-small" v-model.number="Lo">
         </custom-text-field>
-        <custom-text-field :label="`Load (k/ft)`">
-				  <input type="text" class="input is-small" v-model.number="w">
-        </custom-text-field>
+       
       </input-group><!-- INPUT-GROUP -->
 
-      <input-group title="POINT LOADS">
-        <label class="label is-small has-text-left has-text-weight-light">P(k) @ a(ft)</label>
-        <div class="field has-addons">
-          <div class="control">
-            <input class="input is-small" type="text" placeholder="P (k)" v-model.number="P">
-          </div>
-          <div class="control">
-            <input class="input is-small" type="text" placeholder="a (ft)" v-model.number="a">
-          </div>
-          <div class="control">
-            <a class="button is-info is-small" @click="addPL" v-if="editedIndex < 0">
-              <span class="icon has-text-white">
-                <i class="fas fa-plus"></i>
-              </span>
-            </a>
-            <a class="button is-info is-small" @click="updatePL" v-else>
-              <span class="icon has-text-white">
-                <i class="fas fa-pen"></i>
-              </span>
-            </a>
-          </div>
-        </div>
-        <div>
-          <a class="button is-info is-small" @click="cancelEdit" v-if="editedIndex > 0">
-              Cancel Update
-          </a>
-        </div>
-        <div v-for="item in sortedPL">
-          <div class="control pb-1 is-flex is-justify-content-space-between is-clickable" >
-              <div class="tag is-info-light is-flex is-justify-content-space-evenly" style="min-width: 120px;" @click.prevent="editPL(item)">
-                <span> {{ item.P }} k</span>
-                <span> @ </span>
-                <span> {{ item.a }} ft</span>
-              </div>
-              <button class="delete is-danger" @click.prevent="deletePL(item)"></button>
-          </div>
-        </div>
+      <input-group title="LOADS">
+       <custom-text-field :label="`Span Load (psf)`">
+				  <input type="text" class="input is-small" v-model.number="w">
+        </custom-text-field>
+        <custom-text-field :label="`Parapet Load (psf)`">
+				  <input type="text" class="input is-small" v-model.number="wo">
+        </custom-text-field>
+        
       </input-group><!-- INPUT-GROUP -->
 
       <input-group title="PARAMETERS">
@@ -93,16 +62,12 @@
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <!-- BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-         <!-- POINT LOAD -->
-        <g v-for="item in PL" >
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" stroke-width="2" stroke="green"/>
-          <text :x="30 + (item.a/(L+Lo))*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/(L+Lo))*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-        <!-- UNIFORM LOAD -->
-        <rect x="30" y="130" width="240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
+        <!-- SPAN LOAD -->
+        <rect x="30" y="130" :width="(L)/(L+Lo) * 240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
+         <!-- PARAPET LOAD -->
+        <rect :x="(L)/(L+Lo) * 240 + 30" y="130 " :width="240 - (L)/(L+Lo) * 240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-if="wo == w"></rect>
+        <rect :x="(L)/(L+Lo) * 240 + 30" :y="130 - 10*wo/w" :width="240 - (L)/(L+Lo) * 240" :height="10+1wo/w" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-if="wo > w"></rect>
+        <rect :x="(L)/(L+Lo) * 240 + 30" :y="130 + 10*(1-wo/w)" :width="240 - (L)/(L+Lo) * 240" :height="10-10*(1-wo/w)" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1" v-else></rect>
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
         <!-- LEFT SUPPORT -->
@@ -148,27 +113,24 @@
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
 
-import SingleOverhangBeam from '../../classes/analysis/clsSingleOverhangBeam'
+import ParapetWall from '../../classes/analysis/clsParapetWall'
 import { decimal } from "../../utils/mathLib"
 
 export default {
-  name: "SingleOverhangBeam",
+  name: "ParapetWall",
   components: {
    
   },
   mixins: [layoutMixin],
   data() {
     return {
-      L: 12,
+      L: 22,
       Lo: 4,
-      w: 1.15,
-      Ix: 48,
-      E: 29000,
-      P: 0,
-      a: 0,
+      w: 20,
+      wo: 30,
+      Ix: 360,
+      E: 1800,
       PL: [],
-      editedPL: {id: 0,P: 0,a: 0},
-      editedIndex: -1,
       warnings: [],
       flexure:[],
       shear:[],
@@ -195,8 +157,7 @@ export default {
         {type: 'Length', status: this.L < 0, title: "L cannot be negative"},
         {type: 'Length', status: this.Lo <= 0, title: "Lo cannot be negative/zero"},
         {type: 'Load', status: this.w < 0, title: "w cannot be negative"},
-        {type: 'Load', status: this.a > this.L + this.Lo, title: "a cannot be greater than L + L"},
-        {type: 'Load', status: this.P < 0, title: "P cannot be negative"},
+        {type: 'Load', status: this.wo < 0, title: "wo cannot be negative"},
       ]
     },//GENERATE WARNINGS
     design(){
@@ -205,11 +166,12 @@ export default {
         Lo: this.Lo,
         E: this.E,
         I: this.Ix, 
-        w: this.w, 
+        w: this.w/1000, 
+        wo: this.wo/1000,
         PL: this.PL
       }
 
-      let obj = new SingleOverhangBeam(objData)
+      let obj = new ParapetWall(objData)
 
       this.flexure = [
         {name:'Ms', value: obj.Mmax(), decimal: 2, unit: 'k-ft'},
@@ -248,13 +210,7 @@ export default {
           this.SF = 0.25
           break
       }
-
-
     },//ANALYSIS
-    sortedPL(){
-      return this.PL.sort((a,b) => a.a - b.a)
-    }//SORTED PL
- 
   }, //COMPUTED
   methods: {
     formatNumber(num, deci){
@@ -269,33 +225,7 @@ export default {
 
       return pathStr
     },//MOMENT PATH
-    addPL(){
-      let id = Math.floor(Math.random() * 10000)
-      this.PL.push({id: id, P: this.P, a: this.a})
-      this.P = 0
-      this.a = 0
-    },//ADD PL
-    editPL(item){
-      this.editedIndex = item.id
-      this.editedPL = Object.assign({}, item)
-      this.P = this.editedPL.P
-      this.a = this.editedPL.a
-    },//EDIT PL
-    cancelEdit(){
-      this.P = 0
-      this.a = 0
-      this.editedIndex = -1
-      this.editedPL = {id: 0, P: 0, a: 0}
-    },//CANCEL EDIT
-    updatePL(){
-      let index = this.PL.findIndex(x => x.id == this.editedIndex)
-      this.PL.splice(index, 1, {...this.editedPL, P: this.P, a: this.a})
-      this.cancelEdit()
-    },//UPDATE PL
-    deletePL(item){
-      let index = this.PL.findIndex(x => x.id == item.id)
-      this.PL.splice(index,1)
-    },//DELETE PL
+   
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
