@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, last, first} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, last, first, head} from 'lodash'
 
 export default class CantileverBeam {
     constructor({ L=20, E=29000, I=100, w=1,PL=[]}){
@@ -59,8 +59,6 @@ export default class CantileverBeam {
       return 0
     }
 
-
-
     //---------------------------------------------------
     //SHEAR
     //---------------------------------------------------
@@ -95,6 +93,15 @@ export default class CantileverBeam {
         return last(arr)
     }
 
+    VL(){
+        let arr = this.Vx()
+        return head(arr)
+    }
+
+    VR(){
+        let arr = this.Vx()
+        return last(arr)
+    }
    
 
     plotV(){

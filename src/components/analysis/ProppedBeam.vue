@@ -79,61 +79,51 @@
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
       {{design}}
-      <output-values title="FLEXURE" :items="flexure"></output-values>
+      <!-- <output-values title="FLEXURE" :items="flexure"></output-values>
       <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values>
+      <output-values title="DEFLECTION" :items="deflection"></output-values> -->
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        <!-- POINT LOAD -->
-        <g v-for="item in PL" >
-          <line :x1="30 + (item.a/L)*240" y1="105" :x2="30 + (item.a/L)*240" y2="125" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 - 5" y2="120" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 + 5" y2="120" stroke-width="2" stroke="green"/>
-          <text :x="30 + (item.a/L)*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/L)*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-        <!-- UNIFORM LOAD -->
-        <rect x="30" y="130" width="240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- LEFT SUPPORT -->
-        <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- LEFT REACTION -->
-        <text x="10" y="180" text-anchor="start">{{ formatNumber(RL, 2) }} k</text>
-        <!-- RIGHT SUPPORT -->
-        <line x1="270"  y1="143" x2="270"   y2="157" stroke-width="5" stroke="black"/>
-        <!-- RIGHT REACTION -->
-        <text x="290" y="180" text-anchor="end">{{ formatNumber(RR, 2) }} k</text>
-        <!-- DEFLECTION -->
-        <text x="150" y="180" text-anchor="middle">&delta; = {{ formatNumber(Dmax, 3) }} in</text>
-      </svg>
+      <plot-beam-load
+        title = "LOADS"
+        type = "Propped"
+        :PL = "PL"
+        :L = "L"
+        :RL = "RL"
+        :RR = "RR"
+        :Ds = "Dmax"
+      ></plot-beam-load>
 
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- LEFT SUPPORT -->
-        <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- RIGHT SUPPORT -->
-        <circle cx="267.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- SPAN MOMENT VALUE -->
-        <text x="150" y="140" text-anchor="middle" >{{ formatNumber(Ms, 2) }} k-ft @ {{ formatNumber(xm,2) }} ft</text>
-         <!-- FIXED MOMENT VALUE -->
-        <text x="290" y="180" text-anchor="end" >{{ formatNumber(Mc, 2) }} k-ft </text>
-        <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
-        <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT DIAGRAM</text>
-      </svg>
+      <plot-beam-moment
+        title = "MOMENT DIAGRAM"
+        type = "Propped"
+        :L = "L"
+        :plotArr = "plotM"
+        :MC = "Ms"
+        :MR = "Mc"
+        :xm = "xm"
+      ></plot-beam-moment>
 
-      
+      <plot-beam-deflection
+        title = "DEFLECTION DIAGRAM"
+        type = "Propped"
+        :L = "L"
+        :plotArr = "plotD"
+        :DC = "Dmax"
+      ></plot-beam-deflection>
+
+      <plot-beam-shear
+        title = "SHEAR DIAGRAM"
+        type = "Propped"
+        :L = "L"
+        :plotArr = "plotV"
+        :VL = "VL"
+        :VR = "VR"
+      ></plot-beam-shear>
+
 		</template>
   </module-layout>
 
@@ -142,14 +132,17 @@
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-
+import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
+import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
+import PlotBeamShear from "../plot/PlotBeamShear.vue"
+import PlotBeamDeflection from "../plot/PlotBeamDeflection.vue"
 import ProppedBeam from '../../classes/analysis/clsProppedBeam'
 import { decimal } from "../../utils/mathLib";
 
 export default {
   name: "ProppedBeam",
   components: {
-   
+    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection
   },
   mixins: [layoutMixin],
   data () {
@@ -175,6 +168,8 @@ export default {
       Dmax: 0,
       RL: 0,
       RR: 0,
+      VL: 0,
+      VR: 0,
       plotM: []
     }; //RETURN
   }, //DATA
@@ -216,8 +211,12 @@ export default {
       this.xm = obj.xm()
       this.RL = obj.RL()
       this.RR = obj.RR()
+      this.VL = obj.VL()
+      this.VR = obj.VR()
       this.Dmax = obj.Dmax()
       this.plotM = obj.plotM()
+      this.plotV = obj.plotV()
+      this.plotD = obj.plotD()
 
 
       switch(true){

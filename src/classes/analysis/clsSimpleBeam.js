@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, head, last} from 'lodash'
 
 export default class SimpleBeam {
     constructor({ L=20, E=29000, I=100, w=1, PL=[]}){
@@ -104,6 +104,16 @@ export default class SimpleBeam {
     Vmax(){
         let V = map(this.Vx(), (x)=> Math.abs(x))
         return Math.max(...V)
+    }
+
+    VL(){
+        let arr = this.Vx()
+        return head(arr)
+    }
+
+    VR(){
+        let arr = this.Vx()
+        return last(arr)
     }
 
     plotV(){

@@ -79,70 +79,50 @@
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
       {{design}}
-      <output-values title="FLEXURE" :items="flexure"></output-values>
+      <!-- <output-values title="FLEXURE" :items="flexure"></output-values>
       <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values>
+      <output-values title="DEFLECTION" :items="deflection"></output-values> -->
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-         <!-- POINT LOAD -->
-        <g v-for="item in PL" >
-          <line :x1="30 + (item.a/L)*240" y1="105" :x2="30 + (item.a/L)*240" y2="125" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 - 5" y2="120" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 + 5" y2="120" stroke-width="2" stroke="green"/>
-          <text :x="30 + (item.a/L)*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/L)*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-        <!-- UNIFORM LOAD -->
-        <rect x="30" :y="130-w*SF" width="240" :height="10+w*SF" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- LEFT SUPPORT -->
-        <line x1="30"  y1="143" x2="30"   y2="157" stroke-width="5" stroke="black"/>
-        <!-- LEFT REACTION VALUE -->
-        <text x="32.5" y="180" text-anchor="middle">{{ formatNumber(RL, 2) }} k</text>
-        <!-- RIGHT SUPPORT -->
-        <line x1="270"  y1="143" x2="270"   y2="157" stroke-width="5" stroke="black"/>
-        <!-- RIGHT REACTION VALUE -->
-        <text x="267.5" y="180" text-anchor="middle">{{ formatNumber(RR, 2) }} k</text>
-        <!-- DEFLECTION VALUE -->
-        <text x="150" y="200" text-anchor="middle">&delta; = {{(deflection[0].value).toFixed(4)}} in</text>
-        <!-- DEFLECTION VALUE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">LOADS</text>
-      </svg>
+      <plot-beam-load
+        title = "LOADS-1"
+        type = "Fixed"
+        :PL = "PL"
+        :L = "L"
+        :RL = "RL"
+        :RR = "RR"
+      ></plot-beam-load>
 
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        
-        <!-- LEFT VERTICAL -->
-        <!-- <line x1="30"  y1="150" x2="30"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/> -->
-        <!-- LEFT SLOPE -->
-        <!-- <line x1="30"  :y1="150 + Mend*SF"  x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/> -->
-        <!-- RIGHT VERTICAL -->
-        <!-- <line x1="270"  y1="150" x2="270"   :y2="150 + Mend*SF" stroke-width="2" stroke="blue"/>   -->
-        <!-- RIGHT SLOPE -->
-        <!-- <line x1="270"  :y1="150 + Mend*SF" x2="150"   :y2="150 + Ms*SF" stroke-width="2" stroke="blue"/>  -->
-        
-        <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
-        
-        <!-- LEFT MOMENT -->
-        <text x="10" y="180" text-anchor="start">{{ formatNumber(ML, 2) }} </text>
-        <!-- SPAN MOMENT -->
-        <text x="150" y="140" text-anchor="middle">{{ formatNumber(Ms, 2) }} </text>
-        <!-- RIGHT MOMENT -->
-        <text x="290" y="180" text-anchor="end">{{ formatNumber(MR, 2) }} </text>
-        <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT DIAGRAM</text>
-      </svg>
+      <plot-beam-moment
+        title = "MOMENT DIAGRAM"
+        type = "Fixed"
+        :L = "L"
+        :plotArr = "plotM"
+        :ML = "ML"
+        :MC = "MC"
+        :MR = "MR"
+        :xm = "xm"
+      ></plot-beam-moment>
+
+      <plot-beam-deflection
+        title = "DEFLECTION DIAGRAM"
+        type = "Fixed"
+        :L = "L"
+        :plotArr = "plotD"
+        :DC = "Dmax"
+      ></plot-beam-deflection>
+
+      <plot-beam-shear
+        title = "SHEAR DIAGRAM"
+        type = "Fixed"
+        :L = "L"
+        :plotArr = "plotV"
+        :VL = "VL"
+        :VR = "VR"
+      ></plot-beam-shear>
 
 		</template>
   </module-layout>
@@ -150,7 +130,10 @@
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-
+import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
+import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
+import PlotBeamShear from "../plot/PlotBeamShear.vue"
+import PlotBeamDeflection from "../plot/PlotBeamDeflection.vue"
 import FixedBeam from '../../classes/analysis/clsFixedBeam'
 import { decimal } from "../../utils/mathLib";
 
@@ -158,6 +141,7 @@ import { decimal } from "../../utils/mathLib";
 export default {
   name: "FixedBeam",
   components: {
+    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection
   },
   mixins: [layoutMixin],
   data() {
@@ -182,11 +166,17 @@ export default {
       D: 0,
       Mend: 0,
       ML: 0,
+      MC: 0,
       MR: 0,
+      VL: 0,
+      VR: 0,
+      DC: 0,
       Dmax: 0,
       RL: 0,
       RR: 0,
-      plotM: []
+      plotM: [],
+      plotV: [],
+      plotD: []
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -231,11 +221,18 @@ export default {
       this.D = obj.Dmax().toFixed(4)
       this.Mend = obj.ML()
       this.ML = obj.ML()
+      this.MC = obj.Mmax()
+      this.xm = obj.xm()
       this.MR = obj.MR()
       this.RL = obj.RL()
       this.RR = obj.RR()
+      this.VL = obj.VL()
+      this.VR = obj.VR()
+      this.DC = obj.Dmax()
       this.Dmax = obj.Dmax()
       this.plotM = obj.plotM()
+      this.plotV = obj.plotV()
+      this.plotD = obj.plotD()
 
       switch(true){
         case Math.abs(this.Mend) < 10:

@@ -96,6 +96,16 @@ export default class FixedBeam {
         return Math.max(...V)
     }
 
+    VL(){
+        let arr = this.Vx()
+        return parseFloat(head(arr))
+    }
+
+    VR(){
+        let arr = this.Vx()
+        return parseFloat(last(arr))
+    }
+
 
     plotV(){
         return zipWith(this.Lx(), this.Vx(),(x,V)=>{
@@ -139,12 +149,12 @@ export default class FixedBeam {
 
     ML(){
         let arr = this.Mx()
-        return head(arr)
+        return parseFloat(head(arr))
     }
 
     MR(){
         let arr = this.Mx()
-        return last(arr)
+        return parseFloat(last(arr))
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
@@ -152,7 +162,7 @@ export default class FixedBeam {
         let index = findIndex(this.Mx(), (x) => x == this.Mmax())
         let arr = this.Lx()
 
-        return arr[index]
+        return parseFloat(arr[index])
     }
 
 

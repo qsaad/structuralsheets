@@ -80,54 +80,48 @@
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
       {{design}}
-      <output-values title="FLEXURE" :items="flexure"></output-values>
+      <!-- <output-values title="FLEXURE" :items="flexure"></output-values>
       <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values>
+      <output-values title="DEFLECTION" :items="deflection"></output-values> -->
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-         <!-- POINT LOAD -->
-        <g v-for="item in PL" >
-          <line :x1="30 + (item.a/L)*240" y1="105" :x2="30 + (item.a/L)*240" y2="125" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 - 5" y2="120" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 + 5" y2="120" stroke-width="2" stroke="green"/>
-          <text :x="30 + (item.a/L)*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/L)*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-        <!-- UNIFORM LOAD -->
-        <rect x="30" y="130" width="240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- RIGHT SUPPORT -->
-        <line x1="270"  y1="143" x2="270"   y2="157" stroke-width="5" stroke="black"/>
-        <!-- REACTION VALUE -->
-        <text x="290" y="180" text-anchor="end">{{(shear[0].value).toFixed(2)}} k</text>
-        <!-- DEFLECTION VALUE -->
-        <text x="10" y="180" text-anchor="start">&delta; = {{(deflection[0].value).toFixed(4)}} in</text>
-      </svg>
+      <plot-beam-load
+        title = "LOADS"
+        type = "Cantilever"
+        :PL = "PL"
+        :L = "L"
+        :RL = "RL"
+        :RR = "RR"
+      ></plot-beam-load>
 
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- SVG BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- RIGHT SUPPORT -->
-        <line x1="270"  y1="143" x2="270"   y2="157" stroke-width="5" stroke="black"/>
-       
-        
-         <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
-        <!-- MOMENT VALUE -->
-        <text x="290" y="180" text-anchor="end">{{formatNumber(flexure[0].value,2) }} k-ft</text>
-         <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT DIAGRAM</text>
-        
-      </svg>
+      <plot-beam-moment
+        title = "MOMENT DIAGRAM"
+        type = "Cantilever"
+        :L = "L"
+        :plotArr = "plotM"
+        :MR = "Mc"
+      ></plot-beam-moment>
+
+      <plot-beam-deflection
+        title = "DEFLECTION DIAGRAM"
+        type = "Cantilever"
+        :L = "L"
+        :plotArr = "plotD"
+        :DL = "Dmax"
+      ></plot-beam-deflection>
+
+      <plot-beam-shear
+        title = "SHEAR DIAGRAM"
+        type = "Cantilever"
+        :L = "L"
+        :plotArr = "plotV"
+        :VL = "VL"
+        :VR = "VR"
+      ></plot-beam-shear>
+      
 		</template>
   </module-layout>
 
@@ -135,14 +129,17 @@
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-
+import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
+import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
+import PlotBeamShear from "../plot/PlotBeamShear.vue"
+import PlotBeamDeflection from "../plot/PlotBeamDeflection.vue"
 import CantileverBeam from '../../classes/analysis/clsCantileverBeam'
 import { decimal } from "../../utils/mathLib";
 
 export default {
   name: "cantilever-beam",
   components: {
-  
+    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection
   },
   mixins: [layoutMixin],
   data() {
@@ -166,8 +163,11 @@ export default {
       Dmax: 0,
       RL: 0,
       RR: 0,
-      plotM: []
-
+      VL: 0,
+      VR: 0,
+      plotM: [],
+      plotV: [],
+      plotD: []
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -204,8 +204,12 @@ export default {
       this.Mc = obj.Mmax()
       this.RL = obj.RL()
       this.RR = obj.RR()
+      this.VL = obj.VL()
+      this.VR = obj.VR()
       this.Dmax = obj.Dmax()
       this.plotM = obj.plotM()
+      this.plotV = obj.plotV()
+      this.plotD = obj.plotD()
 
       switch(true){
         case Math.abs(this.Mc) < 10:

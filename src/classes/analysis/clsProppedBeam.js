@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, filter} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, filter, head, last} from 'lodash'
 
 export default class ProppedBeam {
     constructor({ L=20, E=29000, I=100, w=1, PL=[]}){
@@ -54,7 +54,7 @@ export default class ProppedBeam {
         forEach(this.PL, (Pi,j)=>{
             let P = Pi.P
             let a = Pi.a
-            Ri =  Ri + P*a**(3*Math.pow(L,2)-Math.pow(a,2))/(2*Math.pow(L,3))
+            Ri =  Ri + P*a*(3*Math.pow(L,2)-Math.pow(a,2))/(2*Math.pow(L,3))
         }) 
         return Ri
     }//RR
@@ -92,6 +92,16 @@ export default class ProppedBeam {
     Vmax(){
         let V = map(this.Vx(), (x)=> Math.abs(x))
         return Math.max(...V)
+    }
+
+     VL(){
+        let arr = this.Vx()
+        return head(arr)
+    }
+
+    VR(){
+        let arr = this.Vx()
+        return last(arr)
     }
 
     plotV(){
