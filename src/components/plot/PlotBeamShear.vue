@@ -6,7 +6,6 @@
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270"   y2="150" class="span"/>
         
-        <!-- LEFT SUPPORT -->
          <!-- LEFT SUPPORT -->
         <g v-if="type != 'Cantilever'">
           <circle cx="32.5" cy="157" :r="5" class="simpleSupport" v-if="params.isLeftSupportSimple"/>
@@ -17,11 +16,12 @@
         
        
         <!-- RIGHT SUPPORT -->
-        <circle cx="267.5" cy="157" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+        <circle :cx="params.rightSupportX" cy="157" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
         <line x1="270"  y1="143" x2="270"   y2="157" class="fixedSupport" v-else/>
         
         <!-- RIGHT VALUE -->
-        <text x="290" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
+        <text :x="params.rightSupportX" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
+        <text :x="params.rightSupportX" :y="params.rightTextY -40" text-anchor="start" v-if="params.isRightText" v-if="VC != 0">{{ formatNumber(VC, 2) }} k </text>
         
         <!-- MOMENT PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
@@ -116,9 +116,9 @@
           return {
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
-            rightSupportX: 267.5,
+            rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             isLeftText: true,
-            leftTextY: 180,
+            leftTextY: 140,
             isCenterText: false,
             centerTextY: 0,
             isRightText: true,
@@ -127,82 +127,6 @@
           break
       }//SWITCH
     },//PARAMS
-    isLeftShear(){
-      switch(true){
-        case (this. type == 'Simple'):
-          return false
-          break
-        case (this. type == 'Propped'):
-          return false
-          break
-        case (this. type == 'Cantilever'):
-          return false
-          break
-        case (this. type == 'Fixed'):
-          return true
-          break
-        case (this. type == 'Overhang'):
-          return false
-          break
-      }
-    },
-    isRightShear(){
-      switch(true){
-        case (this. type == 'Simple'):
-          return false
-          break
-        case (this. type == 'Propped'):
-          return true
-          break
-        case (this. type == 'Cantilever'):
-          return true
-          break
-        case (this. type == 'Fixed'):
-          return true
-          break
-        case (this. type == 'Overhang'):
-          return true
-          break
-      }
-    },
-     isLeftSupportSimple(){
-      switch(true){
-        case (this. type == 'Simple'):
-          return true
-          break
-        case (this. type == 'Propped'):
-          return true
-          break
-        case (this. type == 'Cantilever'):
-          return false
-          break
-        case (this. type == 'Fixed'):
-          return false
-          break
-        case (this. type == 'Overhang'):
-          return true
-          break
-      }
-    },
-    isRightSupportSimple(){
-      switch(true){
-        case (this. type == 'Simple'):
-          return true
-          break
-        case (this. type == 'Propped'):
-          return false
-          break
-        case (this. type == 'Cantilever'):
-          return false
-          break
-        case (this. type == 'Fixed'):
-          return false
-          break
-        case (this. type == 'Overhang'):
-          return true
-          break
-      }
-    }
   }, //COMPUTED
   methods: {
     formatNumber(num, deci){
@@ -233,7 +157,7 @@
     
       plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
 
-      pathStr += ` L ${(this.L*XF + x)} ${(y)}`
+      pathStr += ` L ${((this.L + this.Lo)*XF + x)} ${(y)}`
 
       return pathStr
     },//MOMENT PATH

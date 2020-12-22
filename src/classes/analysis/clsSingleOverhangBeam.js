@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, first, last, compact, filter} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, first, last, compact, filter, head} from 'lodash'
 
 export default class SingleOverhangBeam {
     constructor({ L=20, Lo=1, E=29000, I=100, w=1,  PL=[]}){
@@ -113,9 +113,35 @@ export default class SingleOverhangBeam {
     }
 
     Vmax(){
-        let V = map(this.Vx(), (x)=> Math.abs(x))
-        return Math.max(...V)
+      let V = map(this.Vx(), (x)=> Math.abs(x))
+      return Math.max(...V)
     }
+
+    VL(){
+      let arr = this.Vx()
+      return head(arr)
+    }
+
+    VR(){
+      let arrV = this.Vx()
+      let Vi = map(this.Lx(), (x,i) =>{
+        if( x < this.L){
+          return arrV[i]
+        }
+      })
+      return last(compact(Vi))
+    }
+
+    VC(){
+      let arrV = this.Vx()
+      let Vi = map(this.Lx(), (x,i) =>{
+        if( x >= this.L){
+          return arrV[i]
+        }
+      })
+      return first(compact(Vi))
+    }
+
 
     plotV(){
         return zipWith(this.Lx(), this.Vx(),(x,V)=>{
@@ -173,19 +199,19 @@ export default class SingleOverhangBeam {
         return M
     }
 
-    //MAXIMUM MOMENT
+    // MAXIMUM MOMENT
     Mmax(){
         let arrM = filter(this.Mx(), x => x > 0)
-        let maxVal = Math.max(...arrM)
+        let val = Math.max(...arrM)
 
-        return maxVal > 0 ? maxVal : 0
+        return val > 0 ? val : 0
     }
 
     Mc(){
       let arrM = filter(this.Mx(), x => x < 0)
-      let maxVal = Math.min(...arrM)
+      let val = Math.min(...arrM)
 
-      return maxVal < 0 ? maxVal : 0
+      return val < 0 ? val : 0
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
@@ -297,6 +323,30 @@ export default class SingleOverhangBeam {
     //---------------------------------------------------
     //PARAMETERS
     //---------------------------------------------------
+    params(){
+      return{
+        Lx: this.Lx(),
+        Mmax: this.Mmax(),
+        Mc: this.Mc(),
+        Mx: this.Mx(),
+        xm: this.xm(),
+        xc: this.xc(),
+        RL: this.RL(),
+        RR: this.RR(),
+        Vx: this.Vx(),
+        VL: this.VL(),
+        VR: this.VR(),
+        VC: this.VC(),
+        Dmax: this.Dmax(),
+        Dc: this.Dc(),
+        Dx: this.Dx(),
+        xd: this.xd(),
+        plotM: this.plotM(),
+        plotV: this.plotV(),
+        plotD: this.plotD(),
+      }
+    }
+
     lengthParams(){
         return{
             inc : this.inc,

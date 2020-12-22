@@ -15,16 +15,14 @@
         <text x="10" :y="params.leftTextY" text-anchor="start" v-if="type == 'Cantilever'">{{ formatNumber(DL, 2) }} in</text>
 
         <!-- CENTER VALUE -->
-        <text x="150" :y="params.centerTextY" text-anchor="middle" v-if="type != 'Cantilever'">{{ formatNumber(DC, 2) }} in</text>
+        <text :x="params.centerTextX" :y="params.centerTextY" text-anchor="middle" v-if="type != 'Cantilever'">{{ formatNumber(DC, 2) }} in</text>
         
-        !-- RIGHT SUPPORT -->
-        <circle cx="267.5" cy="157" r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+        <!-- RIGHT SUPPORT -->
+        <circle :cx="params.rightSupportX" cy="157" r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
         <line x1="270"  y1="143" x2="270" y2="157" class="fixedSupport" v-else/>
         
         <!-- RIGHT VALUE -->
-        <!-- <text x="290" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(DR, 2) }} in </text> -->
-        
-        
+        <text x="290" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText" v-if="DR != 0">{{ formatNumber(DR, 2) }} in </text>
         
         <!-- DEFLECTION PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="deflectionFill"/>
@@ -71,6 +69,7 @@
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 0,
@@ -84,6 +83,7 @@
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
@@ -97,6 +97,7 @@
             isLeftText: true,
             leftTextY: 180,
             isCenterText: false,
+            centerTextX: 150,
             centerTextY: 0,
             isRightText: true,
             rightTextY: 180,
@@ -110,6 +111,7 @@
             isLeftText: true,
             leftTextY: 180,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
@@ -119,11 +121,12 @@
           return {
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
-            rightSupportX: 267.5,
+            rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
-            centerTextY: 180,
+            centerTextX: (this.L)/(this.L+this.Lo) * 240 * 0.5 + 30 - 2.5,
+            centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
           }
@@ -185,7 +188,7 @@
   fill: white; 
   stroke: blue; 
   stroke-width: 1px;
-  fill-opacity: 1px;
+  fill-opacity: 0;
   stroke-dasharray: 4 2;
 }
 .valueText{

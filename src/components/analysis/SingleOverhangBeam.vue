@@ -81,65 +81,55 @@
     <!-- OUTPUT -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
-      {{design}}
-      <output-values title="FLEXURE" :items="flexure"></output-values>
-      <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values>
+      
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-         <!-- POINT LOAD -->
-        <g v-for="item in PL" >
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" stroke-width="2" stroke="green"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" stroke-width="2" stroke="green"/>
-          <text :x="30 + (item.a/(L+Lo))*240" y="90" text-anchor="middle" font-size="10">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/(L+Lo))*240" y="100" text-anchor="middle" font-size="10">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-        <!-- UNIFORM LOAD -->
-        <rect x="30" y="130" width="240" height="10" fill="#adc454" stroke="#000" stroke-width="1" fill-opacity="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- LEFT SUPPORT -->
-        <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- LEFT REACTION -->
-        <text x="32.5" y="180" text-anchor="middle">{{ formatNumber(RL, 2) }} k</text>
-        <!-- RIGHT SUPPORT -->
-        <circle :cx="(L)/(L+Lo) * 240 + 30 - 2.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- RIGHT REACTION -->
-        <text :x="(L)/(L+Lo) * 240 + 30 - 2.5" y="180" text-anchor="middle">{{ formatNumber(RR,2) }} k</text>
-        <!-- DEFLECTION VALUES -->
-        <text :x="((L)/(L+Lo) * 240)*0.5 + 30 - 2.5" y="200" text-anchor="middle">{{ formatNumber(Ds,2) }} in</text>
-        <text x="290" y="200" text-anchor="end">{{ formatNumber(Dc,2) }} in</text>
-      </svg>
+      {{design}}
+      <plot-beam-load
+        title = "LOADS"
+        type = "Overhang"
+        :PL = "PL"
+        :L = "L"
+        :Lo = "Lo"
+        :RL = "params.RL"
+        :RR = "params.RR"
+      ></plot-beam-load>
 
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
-        <!-- BORDER -->
-        <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-        <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" stroke-width="3" stroke="black"/>
-        <!-- LEFT SUPPORT -->
-        <circle cx="32.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- RIGHT SUPPORT -->
-        <circle :cx="(L)/(L+Lo) * 240 + 30 - 2.5" cy="157" :r="5" stroke="black" fill="black" stroke-width="1"/>
-        <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotM)" fill="blue" stroke="blue" stroke-width="1" fill-opacity="0.25"/>
-        <!-- SPAN MOMENT -->
-        <text :x="((xm)/(L+Lo) * 240) + 30 - 2.5" y="140" text-anchor="middle">{{ formatNumber(Ms, 2) }} k-ft</text>
-        <!-- CANTILEVER MOMENT -->
-        <text :x="(L)/(L+Lo) * 240 + 30 - 2.5" y="180" text-anchor="middle">{{ formatNumber(Mc, 2) }} k-ft</text>
-        <!-- MAXIMUM SPAN MOMENT POINT VALUE -->
-        <text x="150" y="220" text-anchor="middle" font-size="12">xm = {{ formatNumber(xm, 2) }} ft</text>
-        <!-- INFLEXION POINT VALUE -->
-        <text x="150" y="240" text-anchor="middle" font-size="12">xc = {{ formatNumber(xc, 2) }} ft</text>
-        <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" stroke-width="3" font-size="20">MOMENT DIAGRAM</text>
-      </svg>
+      <plot-beam-moment
+        title = "MOMENT DIAGRAM"
+        type = "Overhang"
+        :L = "L"
+        :Lo = "Lo"
+        :plotArr = "params.plotM"
+        :MC = "params.Mmax"
+        :MR = "params.Mc"
+        :xm = "params.xm"
+        :xc = "params.xc"
+      ></plot-beam-moment>
+
+      <plot-beam-deflection
+        title = "DEFLECTION DIAGRAM"
+        type = "Overhang"
+        :L = "L"
+        :Lo = "Lo"
+        :plotArr = "params.plotD"
+        :DC = "params.Dmax"
+        :DR = "params.Dc"
+      ></plot-beam-deflection>
+
+      <plot-beam-shear
+        title = "SHEAR DIAGRAM"
+        type = "Overhang"
+        :L = "L"
+        :Lo = "Lo"
+        :plotArr = "params.plotV"
+        :VL = "params.VL"
+        :VR = "params.VR"
+        :VC = "params.VC"
+      ></plot-beam-shear>
 
 		</template>
   </module-layout>
@@ -147,14 +137,17 @@
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-
+import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
+import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
+import PlotBeamShear from "../plot/PlotBeamShear.vue"
+import PlotBeamDeflection from "../plot/PlotBeamDeflection.vue"
 import SingleOverhangBeam from '../../classes/analysis/clsSingleOverhangBeam'
 import { decimal } from "../../utils/mathLib"
 
 export default {
   name: "SingleOverhangBeam",
   components: {
-   
+    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection
   },
   mixins: [layoutMixin],
   data() {
@@ -175,15 +168,7 @@ export default {
       deflection:[],
       //GRAPHICS
       SF: 10,
-      Ms: 0,
-      Mc: 0,
-      xm: 0,
-      xc: 0,
-      RL: 0,
-      RR: 0,
-      Ds: 0,
-      Dc: 0,
-      plotM: []
+      params: {},
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -211,44 +196,7 @@ export default {
 
       let obj = new SingleOverhangBeam(objData)
 
-      this.flexure = [
-        {name:'Ms', value: obj.Mmax(), decimal: 2, unit: 'k-ft'},
-        {name:'Mc', value: obj.Mc(), decimal: 2, unit: 'k-ft'},
-      ]
-      this.shear = [
-        {name:'RL', value: obj.RL(), decimal: 2, unit: 'k'},
-        {name:'RR', value: obj.RR(), decimal: 2, unit: 'k'},
-      ]
-      this.deflection = [
-        {name:'Ds', value: obj.Dmax(), decimal: 4, unit: 'in'},
-        {name:'Dc', value: obj.Dc(), decimal: 4, unit: 'in'},
-      ]
-
-      this.Ms = obj.Mmax()
-      this.Mc = obj.Mc()
-      this.RL = obj.RL()
-      this.RR = obj.RR()
-      this.Ds = obj.Dmax()
-      this.Dc = obj.Dc()
-      this.xm = obj.xm()
-      this.xc = obj.xc()
-      this.plotM = obj.plotM()
-
-      switch(true){
-        case (Math.max(Math.abs(this.Ms), Math.abs(this.Mc)) < 10):
-          this.SF = 5
-          break
-        case (Math.max(Math.abs(this.Ms), Math.abs(this.Mc)) < 40):
-          this.SF = 1
-          break
-        case (Math.max(Math.abs(this.Ms), Math.abs(this.Mc)) < 100):
-          this.SF = 0.5
-          break
-        case (Math.max(Math.abs(this.Ms), Math.abs(this.Mc)) > 100):
-          this.SF = 0.25
-          break
-      }
-
+      this.params = obj.params()
 
     },//ANALYSIS
     sortedPL(){
@@ -259,16 +207,7 @@ export default {
   methods: {
     formatNumber(num, deci){
       return decimal(num, deci)
-    },
-    plotPath(x, y, plotArr){
-      let XF = 240/(this.L + this.Lo)
-      let YF = this.SF
-      let pathStr = `M ${x} ${y}`
-    
-      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
-
-      return pathStr
-    },//MOMENT PATH
+    },//FORMAT NUMBER
     addPL(){
       let id = Math.floor(Math.random() * 10000)
       this.PL.push({id: id, P: this.P, a: this.a})

@@ -152,17 +152,17 @@ export default class CantileverBeam {
         return last(arr)
     }
 
-    Mc(){
-      return this.Mmax()
-    }
+    // Mc(){
+    //   return this.Mmax()
+    // }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
-    xm(){
-        let index = findIndex(this.Mx(), (x) => x == this.Mmax())
-        let arr = this.Lx()
+    // xm(){
+    //     let index = findIndex(this.Mx(), (x) => x == this.Mmax())
+    //     let arr = this.Lx()
 
-        return arr[index]
-    }
+    //     return arr[index]
+    // }
 
     //FLEXURE PLOT COORDINATE (X,M)
     plotM(){
@@ -219,12 +219,12 @@ export default class CantileverBeam {
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
-    xd(){
-        let index = findIndex(this.Dx(), (x) => x == this.Dmax())
-        let arr = this.Lx()
+    // xd(){
+    //     let index = findIndex(this.Dx(), (x) => x == this.Dmax())
+    //     let arr = this.Lx()
 
-        return arr[index]
-    }
+    //     return arr[index]
+    // }
 
     //DEFLECTION PLOT COORDINATE (X,D)
     plotD(){
@@ -236,6 +236,24 @@ export default class CantileverBeam {
     //---------------------------------------------------
     //PARAMETERS
     //---------------------------------------------------
+    params(){
+      return{
+        Lx: this.Lx(),
+        Mmax: this.Mmax(),
+        Mx: this.Mx(),
+        RL: this.RL(),
+        RR: this.RR(),
+        Vx: this.Vx(),
+        VL: this.VL(),
+        VR: this.VR(),
+        Dmax: this.Dmax(),
+        Dx: this.Dx(),
+        plotM: this.plotM(),
+        plotV: this.plotV(),
+        plotD: this.plotD(),
+      }
+    }
+
     lengthParams(){
         return{
             inc : this.inc,

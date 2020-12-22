@@ -79,47 +79,45 @@
     <!-- OUTPUT -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
-      {{design}}
-      <!-- <output-values title="FLEXURE" :items="flexure"></output-values>
-      <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values> -->
+      
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
+      {{design}}
       <plot-beam-load
         title = "LOADS"
         type = "Cantilever"
         :PL = "PL"
         :L = "L"
-        :RL = "RL"
-        :RR = "RR"
+        :RL = "params.RL"
+        :RR = "params.RR"
       ></plot-beam-load>
 
       <plot-beam-moment
         title = "MOMENT DIAGRAM"
         type = "Cantilever"
         :L = "L"
-        :plotArr = "plotM"
-        :MR = "Mc"
+        :plotArr = "params.plotM"
+        :MR = "params.Mmax"
       ></plot-beam-moment>
 
       <plot-beam-deflection
         title = "DEFLECTION DIAGRAM"
         type = "Cantilever"
         :L = "L"
-        :plotArr = "plotD"
-        :DL = "Dmax"
+        :plotArr = "params.plotD"
+        :DL = "params.Dmax"
       ></plot-beam-deflection>
 
       <plot-beam-shear
         title = "SHEAR DIAGRAM"
         type = "Cantilever"
         :L = "L"
-        :plotArr = "plotV"
-        :VL = "VL"
-        :VR = "VR"
+        :plotArr = "params.plotV"
+        :VL = "params.VL"
+        :VR = "params.VR"
       ></plot-beam-shear>
       
 		</template>
@@ -159,15 +157,7 @@ export default {
       deflection:[],
       //GRAPHICS
       SF: 10,
-      Mc: 0,
-      Dmax: 0,
-      RL: 0,
-      RR: 0,
-      VL: 0,
-      VR: 0,
-      plotM: [],
-      plotV: [],
-      plotD: []
+      params: {},
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -191,40 +181,7 @@ export default {
 
       let obj = new CantileverBeam(objData)
 
-      this.flexure = [
-        {name:'M', value: obj.Mmax(), decimal: 2, unit: 'k-ft'},
-      ]
-      this.shear = [
-        {name:'V', value: obj.Vmax(), decimal: 2, unit: 'k'},
-      ]
-      this.deflection = [
-        {name:'D', value: obj.Dmax(), decimal: 4, unit: 'in'},
-      ]
-
-      this.Mc = obj.Mmax()
-      this.RL = obj.RL()
-      this.RR = obj.RR()
-      this.VL = obj.VL()
-      this.VR = obj.VR()
-      this.Dmax = obj.Dmax()
-      this.plotM = obj.plotM()
-      this.plotV = obj.plotV()
-      this.plotD = obj.plotD()
-
-      switch(true){
-        case Math.abs(this.Mc) < 10:
-          this.SF = 5
-          break
-        case Math.abs(this.Mc) < 40:
-          this.SF = 1
-          break
-        case Math.abs(this.Mc) < 100:
-          this.SF = 0.5
-          break
-        case Math.abs(this.Mc) > 100:
-          this.SF = 0.25
-          break
-      }
+      this.params = obj.params()
 
     },//design
     sortedPL(){
@@ -234,18 +191,7 @@ export default {
   methods: {
     formatNumber(num, deci){
       return decimal(num, deci)
-    },
-    plotPath(x, y, plotArr){
-      let XF = 240/this.L
-      let YF = this.SF
-      let pathStr = `M ${x} ${y}`
-    
-      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
-
-      pathStr += ` L ${(this.L*XF + x)} ${(y)}`
-
-      return pathStr
-    },//MOMENT PATH
+    },//FORMAT NUMBER
     addPL(){
       let id = Math.floor(Math.random() * 10000)
       this.PL.push({id: id, P: this.P, a: this.a})

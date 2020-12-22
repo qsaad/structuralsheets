@@ -15,14 +15,19 @@
         </g>
 
         <!-- CENTER VALUE -->
-        <text x="150" :y="params.centerTextY" text-anchor="middle" v-if="type != 'Cantilever'">{{ formatNumber(MC, 2) }} k-ft @ {{ formatNumber(xm,2) }} ft</text>
+        <text :x="params.centerTextX" :y="params.centerTextY" text-anchor="middle" v-if="type != 'Cantilever'">{{ formatNumber(MC, 2) }} k-ft</text>
         
         <!-- RIGHT SUPPORT -->
-        <circle cx="267.5" cy="157" r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+        <circle :cx="params.rightSupportX" cy="157" r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
         <line x1="270"  y1="143" x2="270" y2="157" class="fixedSupport" v-else/>
         <!-- RIGHT VALUE -->
-        <text x="290" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(MR, 2) }} k-ft </text>
+        <text :x="params.rightSupportX" :y="params.rightTextY" text-anchor="middle" v-if="params.isRightText">{{ formatNumber(MR, 2) }} k-ft </text>
         
+        <!-- MAXIMUM SPAN MOMENT POINT VALUE -->
+        <text x="150" y="210" text-anchor="middle" font-size="12" v-if="xm > 0">xm = {{ formatNumber(xm, 2) }} ft</text>
+        <!-- INFLEXION POINT VALUE -->
+        <text x="150" y="225" text-anchor="middle" font-size="12" v-if="xc > 0">xc = {{ formatNumber(xc, 2) }} ft</text>
+        <text x="150" y="240" text-anchor="middle" font-size="12" v-if="xcr > 0">xcr = {{ formatNumber(xcr, 2) }} ft</text>
         
         <!-- MOMENT PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
@@ -51,6 +56,7 @@
     MR: { type: Number, default: 0},
     xm: { type: Number, default: 0},
     xc: { type: Number, default: 0},
+    xcr: { type: Number, default: 0},
   },
   data() {
     return {
@@ -71,6 +77,7 @@
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 0,
@@ -84,6 +91,7 @@
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
@@ -97,6 +105,7 @@
             isLeftText: false,
             leftTextY: 0,
             isCenterText: false,
+            centerTextX: 150,
             centerTextY: 0,
             isRightText: true,
             rightTextY: 180,
@@ -110,6 +119,7 @@
             isLeftText: true,
             leftTextY: 180,
             isCenterText: true,
+            centerTextX: 150,
             centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
@@ -119,11 +129,12 @@
           return {
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
-            rightSupportX: 267.5,
+            rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
-            centerTextY: 180,
+            centerTextX: (this.L)/(this.L+this.Lo) * 240 * 0.5 + 30 - 2.5,
+            centerTextY: 140,
             isRightText: true,
             rightTextY: 180,
           }

@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, head, last} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, head, last, first, compact} from 'lodash'
 
 export default class FixedBeam {
     constructor({ L=20, E=29000, I=100, w=1, PL=[]}){
@@ -165,6 +165,26 @@ export default class FixedBeam {
         return parseFloat(arr[index])
     }
 
+    xc(){
+        let arrM = this.Mx()
+        let arrX =  map(this.Lx(), (x,i) =>{
+            if(arrM[i] < 0 && arrM[i+1] > 0){
+                return x
+            }
+        })
+        return parseFloat(first(compact(arrX)))
+    }
+
+    xcr(){
+        let arrM = this.Mx()
+        let arrX =  map(this.Lx(), (x,i) =>{
+            if(arrM[i] > 0 && arrM[i+1] < 0){
+                return x
+            }
+        })
+        return parseFloat(last(compact(arrX)))
+    }
+
 
     //FLEXURE PLOT COORDINATE (X,M)
     plotM(){
@@ -230,6 +250,30 @@ export default class FixedBeam {
     //---------------------------------------------------
     //PARAMETERS
     //---------------------------------------------------
+    params(){
+      return{
+        Lx: this.Lx(),
+        Mmax: this.Mmax(),
+        ML: this.ML(),
+        MR: this.MR(),
+        Mx: this.Mx(),
+        xm: this.xm(),
+        xc: this.xc(),
+        xcr: this.xcr(),
+        RL: this.RL(),
+        RR: this.RR(),
+        Vx: this.Vx(),
+        VL: this.VL(),
+        VR: this.VR(),
+        Dmax: this.Dmax(),
+        Dx: this.Dx(),
+        xd: this.xd(),
+        plotM: this.plotM(),
+        plotV: this.plotV(),
+        plotD: this.plotD(),
+      }
+    }
+
     lengthParams(){
         return{
             inc : this.inc,

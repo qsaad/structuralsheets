@@ -78,50 +78,50 @@
     <!-- OUTPUT -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:outputs>
-      {{design}}
-      <!-- <output-values title="FLEXURE" :items="flexure"></output-values>
-      <output-values title="SHEAR" :items="shear"></output-values>
-      <output-values title="DEFLECTION" :items="deflection"></output-values> -->
+     
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!-- GRAPHICS -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
+      {{design}}
       <plot-beam-load
         title = "LOADS-1"
         type = "Fixed"
         :PL = "PL"
         :L = "L"
-        :RL = "RL"
-        :RR = "RR"
+        :RL = "params.RL"
+        :RR = "params.RR"
       ></plot-beam-load>
 
       <plot-beam-moment
         title = "MOMENT DIAGRAM"
         type = "Fixed"
         :L = "L"
-        :plotArr = "plotM"
-        :ML = "ML"
-        :MC = "MC"
-        :MR = "MR"
-        :xm = "xm"
+        :plotArr = "params.plotM"
+        :ML = "params.ML"
+        :MC = "params.Mmax"
+        :MR = "params.MR"
+        :xm = "params.xm"
+        :xc = "params.xc"
+        :xcr = "params.xcr"
       ></plot-beam-moment>
 
       <plot-beam-deflection
         title = "DEFLECTION DIAGRAM"
         type = "Fixed"
         :L = "L"
-        :plotArr = "plotD"
-        :DC = "Dmax"
+        :plotArr = "params.plotD"
+        :DC = "params.Dmax"
       ></plot-beam-deflection>
 
       <plot-beam-shear
         title = "SHEAR DIAGRAM"
         type = "Fixed"
         :L = "L"
-        :plotArr = "plotV"
-        :VL = "VL"
-        :VR = "VR"
+        :plotArr = "params.plotV"
+        :VL = "params.VL"
+        :VR = "params.VR"
       ></plot-beam-shear>
 
 		</template>
@@ -161,22 +161,7 @@ export default {
       deflection:[],
       //GRAPHICS
       SF: 2,
-      Ms: 0,
-      V: 0,
-      D: 0,
-      Mend: 0,
-      ML: 0,
-      MC: 0,
-      MR: 0,
-      VL: 0,
-      VR: 0,
-      DC: 0,
-      Dmax: 0,
-      RL: 0,
-      RR: 0,
-      plotM: [],
-      plotV: [],
-      plotD: []
+      params: {},
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -200,54 +185,7 @@ export default {
 
       let obj = new FixedBeam(objData)
 
-      //VALUES FOR OUTPUT
-      this.flexure = [
-        {name:'Ms', value: obj.Mmax(), decimal: 2, unit: 'k-ft'},
-        {name:'ML', value: Math.abs(obj.ML()), decimal: 2, unit: 'k-ft'},
-        {name:'MR', value: Math.abs(obj.MR()), decimal: 2, unit: 'k-ft'},
-      ]
-      this.shear = [
-        {name:'RL', value: obj.RL(), decimal: 2, unit: 'k'},
-        {name:'RR', value: obj.RR(), decimal: 2, unit: 'k'},
-      ]
-      this.deflection = [
-        {name:'D', value: obj.Dmax(), decimal: 4, unit: 'in'},
-      ]
-
-      //VALUE FOR GRAPHICS
-      
-      this.Ms = obj.Mmax()
-      this.V = obj.Vmax().toFixed(2)
-      this.D = obj.Dmax().toFixed(4)
-      this.Mend = obj.ML()
-      this.ML = obj.ML()
-      this.MC = obj.Mmax()
-      this.xm = obj.xm()
-      this.MR = obj.MR()
-      this.RL = obj.RL()
-      this.RR = obj.RR()
-      this.VL = obj.VL()
-      this.VR = obj.VR()
-      this.DC = obj.Dmax()
-      this.Dmax = obj.Dmax()
-      this.plotM = obj.plotM()
-      this.plotV = obj.plotV()
-      this.plotD = obj.plotD()
-
-      switch(true){
-        case Math.abs(this.Mend) < 10:
-          this.SF = 5
-          break
-        case Math.abs(this.Mend) < 40:
-          this.SF = 1
-          break
-        case Math.abs(this.Mend) < 100:
-          this.SF = 0.5
-          break
-        case Math.abs(this.Mend) > 100:
-          this.SF = 0.25
-          break
-      }
+      this.params = obj.params()
 
     },//ANALYSIS
     sortedPL(){
@@ -257,18 +195,7 @@ export default {
   methods: {
     formatNumber(num, deci){
       return decimal(num, deci)
-    },
-    plotPath(x, y, plotArr){
-      let XF = 240/this.L
-      let YF = this.SF
-      let pathStr = `M ${x} ${y}`
-    
-      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
-
-      pathStr += ` L ${(this.L*XF + x)} ${(y)}`
-
-      return pathStr
-    },//MOMENT PATH
+    },//FORMAT NUMBER
     addPL(){
       let id = Math.floor(Math.random() * 10000)
       this.PL.push({id: id, P: this.P, a: this.a})

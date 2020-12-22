@@ -227,6 +227,26 @@ export default class SimpleBeam {
     //---------------------------------------------------
     //PARAMETERS
     //---------------------------------------------------
+    params(){
+      return{
+        Lx: this.Lx(),
+        Mmax: this.Mmax(),
+        Mx: this.Mx(),
+        xm: this.xm(),
+        RL: this.RL(),
+        RR: this.RR(),
+        Vx: this.Vx(),
+        VL: this.VL(),
+        VR: this.VR(),
+        Dmax: this.Dmax(),
+        Dx: this.Dx(),
+        xd: this.xd(),
+        plotM: this.plotM(),
+        plotV: this.plotV(),
+        plotD: this.plotD(),
+      }
+    }
+    
     lengthParams(){
         return{
             inc : this.inc,

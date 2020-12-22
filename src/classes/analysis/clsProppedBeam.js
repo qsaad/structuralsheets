@@ -1,4 +1,4 @@
-import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, filter, head, last} from 'lodash'
+import {concat, range, forEach, zipWith, split, map, toNumber, findIndex, filter, head, first, last, compact} from 'lodash'
 
 export default class ProppedBeam {
     constructor({ L=20, E=29000, I=100, w=1, PL=[]}){
@@ -145,7 +145,7 @@ export default class ProppedBeam {
     }
 
     //MAXIMUM FIXED MOMENT
-    Mc(){
+    MR(){
       let arrM = filter(this.Mx(), x => x < 0)
       let maxVal = Math.min(...arrM)
 
@@ -158,6 +158,16 @@ export default class ProppedBeam {
         let arr = this.Lx()
 
         return parseFloat(arr[index])
+    }
+
+    xc(){
+        let arrM = this.Mx()
+        let arrX =  map(this.Lx(), (x,i) =>{
+            if(arrM[i] > 0 && arrM[i+1] < 0){
+                return x
+            }
+        })
+        return parseFloat(first(compact(arrX)))
     }
 
     //FLEXURE PLOT COORDINATE (X,M)
@@ -223,6 +233,28 @@ export default class ProppedBeam {
     //---------------------------------------------------
     //PARAMETERS
     //---------------------------------------------------
+    params(){
+      return{
+        Lx: this.Lx(),
+        Mmax: this.Mmax(),
+        MR: this.MR(),
+        Mx: this.Mx(),
+        xm: this.xm(),
+        xc: this.xc(),
+        RL: this.RL(),
+        RR: this.RR(),
+        Vx: this.Vx(),
+        VL: this.VL(),
+        VR: this.VR(),
+        Dmax: this.Dmax(),
+        Dx: this.Dx(),
+        xd: this.xd(),
+        plotM: this.plotM(),
+        plotV: this.plotV(),
+        plotD: this.plotD(),
+      }
+    }
+
     lengthParams(){
         return{
             inc : this.inc,

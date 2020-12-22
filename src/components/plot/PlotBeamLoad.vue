@@ -5,11 +5,11 @@
         
         <!-- POINT LOAD -->
         <g v-for="item in PL" >
-          <line :x1="30 + (item.a/L)*240" y1="105" :x2="30 + (item.a/L)*240" y2="125" class="pointLoad"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 - 5" y2="120" class="pointLoad"/>
-          <line :x1="30 + (item.a/L)*240" y1="125" :x2="30 + (item.a/L)*240 + 5" y2="120" class="pointLoad"/>
-          <text :x="30 + (item.a/L)*240" y="90" class="pointLoadText">{{ formatNumber(item.P, 1)}} k</text>
-          <text :x="30 + (item.a/L)*240" y="100" class="pointLoadText">{{ formatNumber(item.a, 1)}} ft</text>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" class="pointLoad"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" class="pointLoad"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" class="pointLoad"/>
+          <text :x="30 + (item.a/(L+Lo))*240" y="90" class="pointLoadText">{{ formatNumber(item.P, 1)}} k</text>
+          <text :x="30 + (item.a/(L+Lo))*240" y="100" class="pointLoadText">{{ formatNumber(item.a, 1)}} ft</text>
         </g>
 
         <!-- UNIFORM LOAD -->
@@ -28,11 +28,11 @@
         </g>
         
         <!-- RIGHT SUPPORT -->
-        <circle cx="267.5" cy="157" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+        <circle :cx="params.rightSupportX" cy="157" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
         <line x1="270"  y1="143" x2="270"   y2="157" class="fixedSupport" v-else/>
         
         <!-- RIGHT REACTION -->
-        <text x="290" y="180" text-anchor="end">{{ formatNumber(RR, 2)}} k</text>
+        <text :x="params.rightSupportX" y="180" text-anchor="middle">{{ formatNumber(RR, 2)}} k</text>
 
         <!-- TITLE -->
         <text x="150" y="280" class="titleText">{{ title }}</text>
@@ -127,7 +127,7 @@
           return {
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
-            rightSupportX: 267.5,
+            rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             isLeftText: false,
             leftTextY: 0,
             isCenterText: true,
