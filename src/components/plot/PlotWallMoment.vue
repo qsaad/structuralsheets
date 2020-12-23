@@ -1,29 +1,11 @@
 <template>
-     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <!-- SVG BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
-
-        <!-- POINT LOAD -->
-        <g v-for="item in PL" :transform="params.plotTransform">
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" class="pointLoad"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" class="pointLoad"/>
-          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" class="pointLoad"/>
-        </g>
-
-        <g v-for="item in PL">
-         <text x="40" :y="300-27-(item.a/(L+Lo))*240" class="pointLoadText">{{ formatNumber(item.P, 1)}} k</text>
-          <text x="80" :y="300-27-(item.a/(L+Lo))*240" class="pointLoadText">{{ formatNumber(item.a, 1)}} ft</text>
-        </g>
-
-        <!-- UNIFORM LOAD -->
-        <g :transform="params.plotTransform">
-          <rect x="30" y="130" :width="params.loadWidth" height="10" class="uniformLoad"></rect>
-          <rect :x="30+params.loadWidth" :y="130 + 10*(1-wo/w)" :width="240 - params.loadWidth" :height="10*wo/w" class="uniformLoad" v-if="type == 'Overhang'"></rect>
-        </g>
-
+        
         <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270" y2="150" class="span" :transform="params.plotTransform"/>
-
+        <line x1="30"  y1="150" x2="270"   y2="150" class="span" :transform="params.plotTransform"/>
+        
         <!-- LEFT SUPPORT -->
         <g v-if="type != 'Cantilever'" :transform="params.plotTransform">
           <circle :cx="params.leftSupportX" :cy="params.leftSupportY" r="5" class="simpleSupport" v-if="params.isLeftSupportSimple"/>
@@ -36,42 +18,55 @@
           <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
         </g>
 
-        <!-- LEFT REACTION -->
-        <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(RL, 2) }} k</text>
-        
-        <!-- RIGHT REACTION -->
-        <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="start" v-if="params.isRightText">{{ formatNumber(RR, 2)}} k</text>
+        <!-- LEFT VALUE -->
+        <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(ML, 2) }} k-ft</text>
 
+        <!-- CENTER VALUE -->
+        <text :x="params.centerTextX" :y="params.centerTextY" text-anchor="end" v-if="params.isCenterText">{{ formatNumber(MC, 2) }} k-ft</text>
+        
+        <!-- RIGHT VALUE -->
+        <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="start" v-if="params.isRightText">{{ formatNumber(MR, 2) }} k-ft </text>
+        
+        <!-- MAXIMUM SPAN MOMENT POINT VALUE -->
+        <text x="50" y="210" text-anchor="middle" font-size="12" v-if="xm > 0">xm = {{ formatNumber(xm, 2) }} ft</text>
+        <!-- INFLEXION POINT VALUE -->
+        <text x="50" y="225" text-anchor="middle" font-size="12" v-if="xc > 0">xc = {{ formatNumber(xc, 2) }} ft</text>
+        <text x="50" y="240" text-anchor="middle" font-size="12" v-if="xcr > 0">xcr = {{ formatNumber(xcr, 2) }} ft</text>
+        
+        <!-- MOMENT PLOT -->
+        <path :d="plotPath(30,150, plotArr)" class="plotFill" :transform="params.plotTransform"/>
+        
         <!-- TITLE -->
         <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
-    </svg>
-  
+      </svg>
 </template>
 
 <script>
   import { decimal } from "../../utils/mathLib";
   
 	export default {
-  name: "PlotWallLoad",
+  name: "PlotWallMoment",
   components: {
       
-  },
+    },
   props: {
     title: { type: String, default: ''},
-    type: { type: String, default: ''},
-    PL: { type: Array, default: []},
+    type: { type: String, default: 'Simple'},
     L: { type: Number, default: 0},
     Lo: { type: Number, default: 0},
-    w: { type: Number, default: 0},
-    wo: { type: Number, default: 0},
-    RL: { type: Number, default: 0},
-    RR: { type: Number, default: 0},
-    Ds: { type: Number, default: 0},
+    plotArr: { type: Array, default: []},
+    ML: { type: Number, default: 0},
+    MC: { type: Number, default: 0},
+    MR: { type: Number, default: 0},
+    xm: { type: Number, default: 0},
+    xc: { type: Number, default: 0},
+    xcr: { type: Number, default: 0},
   },
   data() {
     return {
-      titleX: 10,
-      titleY: 10,  
+      SF: 0,
+      titleX: 150,
+      titleY: 280, 
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -82,7 +77,7 @@
       switch(true){
         case (this. type == 'Simple'):
           return {
-            //SUPPORT VISIBILITY
+             //SUPPORT VISIBILITY
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
             //SUPPORT LOCATION
@@ -90,17 +85,15 @@
             leftSupportY: 157,
             rightSupportX: 267.5,
             rightSupportY: 157,
-            //UNIFORM LOAD
-            loadWidth: 240,
             //TEXT VISIBILITY
-            isLeftText: true,
-            isCenterText: false,
-            isRightText: true,
+            isLeftText: false,
+            isCenterText: true,
+            isRightText: false,
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 140,
+            centerTextY: 150,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
@@ -117,22 +110,19 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
-            //UNIFORM LOAD
-            loadWidth: 240,
             //TEXT VISIBILITY
-            isLeftText: true,
-            isCenterText: false,
+            isLeftText: false,
+            isCenterText: true,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 140,
+            centerTextY: 150,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
-            //plotTransform: 'rotate(90 150 150)'
-            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
+            plotTransform: 'rotate(-90 150 150)'
           }
           break
         case (this. type == 'Cantilever'):
@@ -145,8 +135,6 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
-            //UNIFORM LOAD
-            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: false,
             isCenterText: false,
@@ -154,13 +142,12 @@
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 140,
+            centerTextY: 150,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
-            //plotTransform: 'rotate(90 150 150)'
-            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
+            plotTransform: 'rotate(-90 150 150)'
           }
           break
         case (this. type == 'Fixed'):
@@ -173,17 +160,15 @@
             leftSupportY: 150,
             rightSupportX: 270,
             rightSupportY: 150,
-            //UNIFORM LOAD
-            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
-            isCenterText: false,
+            isCenterText: true,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 140,
+            centerTextY: 150,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
@@ -200,19 +185,18 @@
             leftSupportY: 157,
             rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             rightSupportY: 157,
-            //UNIFORM LOAD
-            loadWidth: (this.L)/(this.L+this.Lo) * 240,
             //TEXT VISIBILITY
-            isLeftText: true,
-            isCenterText: false,
+            isLeftText: false,
+            isCenterText: true,
             isRightText: true,
             //TEXT LOCATION
-            leftTextX: 170,
-            leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            leftTextX: 10,
+            leftTextY: 180,
+            centerTextX: 140,
+            centerTextY: 300-(this.L)/(this.L+this.Lo) * 240 * 0.5 -30 + 2.5,
             rightTextX: 170,
             rightTextY: 300-(this.L)/(this.L+this.Lo) * 240 -30 + 2.5,
+            //TRANSFORM
             plotTransform: 'rotate(-90 150 150)'
           }
           break
@@ -223,26 +207,44 @@
     formatNumber(num, deci){
       return decimal(num, deci)
     },//FORMAT NUMBER
+     maxValue(){
+      return Math.max(Math.abs(this.ML), Math.abs(this.MC), Math.abs(this.MR))
+    },
+    plotPath(x, y, plotArr){
+      switch(true){
+        case (this. maxValue() < 10):
+          this.SF = 5
+          break
+        case (this. maxValue() < 40):
+          this.SF = 1
+          break
+        case (this. maxValue() < 100):
+          this.SF = 0.5
+          break
+        case (this. maxValue() > 100):
+          this.SF = 0.25
+          break
+      }
+
+      let XF = 240/(this.L + this.Lo)
+      let YF = this.SF
+      let pathStr = `M ${x} ${y}`
+    
+      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
+
+      if(this.type == 'Propped' || 'Cantilever' || 'Fixed'){
+        pathStr += ` L ${(this.L*XF + x)} ${(y)}`
+      }
+      
+
+      return pathStr
+    },//MOMENT PATH
    
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
 
 <style scoped>
-.pointLoad{
-  stroke: #adc454;
-  stroke-width: 2px;
-}
-.pointLoadText{
-  text-anchor: middle;
-  font-size: 10px;
-}
-.uniformLoad{
-  stroke: #000;
-  stroke-width: 1px;
-  fill: #adc454;
-  fill-opacity: 1px;
-}
 .span{
   stroke: #000;
   stroke-width: 3px;
@@ -256,12 +258,18 @@
   stroke: #000;
   stroke-width: 5px; 
 }
+.plotFill{
+  fill: blue; 
+  stroke: blue; 
+  stroke-width: 1px; 
+  fill-opacity: 0.25;
+}
 .valueText{
 
 }
 .titleText{
-  text-anchor: start;
+  text-anchor: middle;
   stroke-width: 3; 
   font-size: 20px;
-}
+} 
 </style>
