@@ -32,13 +32,11 @@
         <text x="150" y="225" text-anchor="middle" font-size="12" v-if="xc > 0">xc = {{ formatNumber(xc, 2) }} ft</text>
         <text x="150" y="240" text-anchor="middle" font-size="12" v-if="xcr > 0">xcr = {{ formatNumber(xcr, 2) }} ft</text>
         
-        <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
+        <!-- FORCE PLOT -->
+        <path :d="plotPath(30,150, plotArr)" class="forceFill"/>
 
         <!-- CAPACITY PLOT -->
-        <rect x="30" y="150" width="70" height="20" class="plotCapacity"></rect>
-        <rect x="100" y="150" width="70" height="30" class="plotCapacity"></rect>
-        <rect x="170" y="150" width="100" height="20" class="plotCapacity"></rect>
+        <rect :x="item.x" y="150" :width="item.width" :height="item.height" class="capacityFill" v-for="item in plotCapacity(30, 150, capacityArr)"></rect>
 
         <!-- TITLE -->
         <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
@@ -71,10 +69,10 @@
       SF: 0,
       titleX: 150,
       titleY: 280,
-      plotC:[
-        {value:20, start:0, end: 5},
-        {value:40, start:5, end: 8},
-        {value:20, start:12, end: 12}
+      capacityArr:[
+        {Mc: 20, Lc: 2},
+        {Mc: 30, Lc: 6},
+        {Mc: 20, Lc: 4}
       ] 
     }; //RETURN
   }, //DATA
@@ -208,25 +206,53 @@
     },//FORMAT NUMBER
      maxValue(){
       return Math.max(Math.abs(this.ML), Math.abs(this.MC), Math.abs(this.MR))
-    },
-    plotPath(x, y, plotArr){
+    },//MAX VALUE
+    XSF(){
+      return 240/(this.L + this.Lo)
+    },//XSF
+    YSF(){
       switch(true){
         case (this. maxValue() < 10):
-          this.SF = 5
+          return 5
           break
         case (this. maxValue() < 40):
-          this.SF = 1
+          return 1
           break
         case (this. maxValue() < 100):
-          this.SF = 0.5
+          return 0.5
           break
         case (this. maxValue() > 100):
-          this.SF = 0.25
+          return 0.25
           break
       }
+    },//YSF
+    plotCapacity(x,y, arr){
+      let XF = this.XSF()
+      let YF = this.YSF()
+      let Lx = 0
 
-      let XF = 240/(this.L + this.Lo)
-      let YF = this.SF
+      if(arr.length < 1){
+        return{
+            x: x,
+            width: arr[0].Lc * XF,
+            height: arr[0].Mc * YF
+          }
+      }
+      else{
+        return arr.map( (item, i, items) =>{
+          Lx = i == 0 ? x : Lx + items[i-1].Lc * XF
+          return{
+            x: Lx,
+            width: item.Lc * XF,
+            height: item.Mc * YF
+          }
+        })
+      }
+    },//PLOT CAPACITY
+    plotPath(x, y, plotArr){
+      let XF = this.XSF()
+      let YF = this.YSF()
+
       let pathStr = `M ${x} ${y}`
     
       plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
@@ -237,7 +263,6 @@
 
       return pathStr
     },//MOMENT PATH
-   
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
@@ -256,14 +281,15 @@
   stroke: #000;
   stroke-width: 5px; 
 }
-.plotCapacity{
-  fill: #eedd00; 
-  stroke: #eedd00; 
+.capacityFill{
+  fill: #090; 
+  stroke: #090; 
   stroke-width: 1px; 
-  fill-opacity: 0.4;
-  stroke-opacity: 0.4;
+  fill-opacity: 0.1;
+  stroke-opacity: 1;
+  stroke-dasharray: 4 2;
 }
-.plotFill{
+.forceFill{
   fill: blue; 
   stroke: blue; 
   stroke-width: 1px; 

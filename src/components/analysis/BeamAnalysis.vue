@@ -4,7 +4,7 @@
     <!-- HEADER -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:header>
-      PARAPET WALL
+      BEAM ANAL
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!--INPUTS -->
@@ -189,6 +189,8 @@ export default {
       wo: 1,
       Ix: 48,
       E: 29000,
+      P: 0,
+      a: 0,
       PL: [],
       editedPL: {id: 0,P: 0,a: 0},
       editedIndex: -1,
