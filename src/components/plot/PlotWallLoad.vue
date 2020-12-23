@@ -1,61 +1,73 @@
 <template>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
+     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300">
         <!-- SVG BORDER -->
         <rect width="300" height="300" fill="#fff" stroke="#000" stroke-width="1"></rect>
         
+        <!-- POINT LOAD -->
+        <g v-for="item in PL" transform="rotate(90 150 150">
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="105" :x2="30 + (item.a/(L+Lo))*240" y2="125" class="pointLoad"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 - 5" y2="120" class="pointLoad"/>
+          <line :x1="30 + (item.a/(L+Lo))*240" y1="125" :x2="30 + (item.a/(L+Lo))*240 + 5" y2="120" class="pointLoad"/>
+          <text :x="30 + (item.a/(L+Lo))*240" y="90" class="pointLoadText">{{ formatNumber(item.P, 1)}} k</text>
+          <text :x="30 + (item.a/(L+Lo))*240" y="100" class="pointLoadText">{{ formatNumber(item.a, 1)}} ft</text>
+        </g>
+
+        <!-- UNIFORM LOAD -->
+        <g transform="rotate(90 150 150">
+          <rect x="30" y="130" :width="params.loadWidth" height="10" class="uniformLoad"></rect>
+          <rect :x="30+params.loadWidth" :y="130 + 10*(1-wo/w)" :width="240 - params.loadWidth" :height="10*wo/w" class="uniformLoad" v-if="type == 'Overhang'"></rect>
+        </g>
+
         <!-- BEAM SPAN -->
-        <line x1="30"  y1="150" x2="270"   y2="150" class="span"/>
-        
-         <!-- LEFT SUPPORT -->
-        <g v-if="type != 'Cantilever'">
+        <line x1="30"  y1="150" x2="270" y2="150" class="span" transform="rotate(90 150 150"/>
+
+        <!-- LEFT SUPPORT -->
+        <g v-if="type != 'Cantilever'" transform="rotate(90 150 150">
           <circle :cx="params.leftSupportX" :cy="params.leftSupportY" r="5" class="simpleSupport" v-if="params.isLeftSupportSimple"/>
           <line :x1="params.leftSupportX" :y1="params.leftSupportY-7" :x2="params.leftSupportX" :y2="params.leftSupportY+7" class="fixedSupport" v-else/>
         </g>
         
         <!-- RIGHT SUPPORT -->
-        <g>
+        <g >
           <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
           <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
         </g>
+        <!-- LEFT REACTION -->
+        <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(RL, 2) }} k</text>
         
-        <!-- LEFT VALUE -->
-        <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(VL, 2) }} k</text>
-        
-        <!-- RIGHT VALUE -->
-        <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
-        <text :x="params.rightTextX" :y="params.rightTextY -40" text-anchor="start" v-if="params.isRightText" v-if="VC != 0">{{ formatNumber(VC, 2) }} k </text>
-        
-        <!-- MOMENT PLOT -->
-        <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
-        
+        <!-- RIGHT REACTION -->
+        <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="middle" v-if="params.isRightText">{{ formatNumber(RR, 2)}} k</text>
+
         <!-- TITLE -->
-        <text :x="titleX" :y="titleY" text-anchor="middle" class="titleText">{{ title }}</text>
-      </svg>
+        <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
+    </svg>
+  
 </template>
 
 <script>
   import { decimal } from "../../utils/mathLib";
   
 	export default {
-  name: "PlotBeamShear",
+  name: "PlotWallLoad",
   components: {
       
-    },
+  },
   props: {
     title: { type: String, default: ''},
-    type: { type: String, default: 'Simple'},
+    type: { type: String, default: ''},
+    PL: { type: Array, default: []},
     L: { type: Number, default: 0},
     Lo: { type: Number, default: 0},
-    plotArr: { type: Array, default: []},
-    VL: { type: Number, default: 0},
-    VR: { type: Number, default: 0},
-    VC: { type: Number, default: 0},
+    w: { type: Number, default: 0},
+    wo: { type: Number, default: 0},
+    RL: { type: Number, default: 0},
+    RR: { type: Number, default: 0},
+    Ds: { type: Number, default: 0},
   },
   data() {
     return {
-      SF: 0,
       titleX: 150,
-      titleY: 280, 
+      titleY: 280,  
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -66,7 +78,7 @@
       switch(true){
         case (this. type == 'Simple'):
           return {
-             //SUPPORT VISIBILITY
+            //SUPPORT VISIBILITY
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
             //SUPPORT LOCATION
@@ -74,16 +86,18 @@
             leftSupportY: 157,
             rightSupportX: 267.5,
             rightSupportY: 157,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 10,
-            leftTextY: 140,
+            leftTextY: 180,
             centerTextX: 150,
             centerTextY: 140,
-            rightTextX: 290,
+            rightTextX: 267.5,
             rightTextY: 180,
           }
           break
@@ -97,16 +111,18 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 10,
-            leftTextY: 140,
+            leftTextY: 180,
             centerTextX: 150,
             centerTextY: 140,
-            rightTextX: 290,
+            rightTextX: 267.5,
             rightTextY: 180,
           }
           break
@@ -120,6 +136,8 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: false,
             isCenterText: false,
@@ -129,7 +147,7 @@
             leftTextY: 180,
             centerTextX: 150,
             centerTextY: 140,
-            rightTextX: 290,
+            rightTextX: 270,
             rightTextY: 180,
           }
           break
@@ -143,16 +161,18 @@
             leftSupportY: 150,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 10,
-            leftTextY: 140,
+            leftTextY: 180,
             centerTextX: 150,
             centerTextY: 140,
-            rightTextX: 290,
+            rightTextX: 270,
             rightTextY: 180,
           }
           break
@@ -166,13 +186,15 @@
             leftSupportY: 157,
             rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             rightSupportY: 157,
+            //UNIFORM LOAD
+            loadWidth: (this.L)/(this.L+this.Lo) * 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 10,
-            leftTextY: 140,
+            leftTextY: 180,
             centerTextX: 150,
             centerTextY: 140,
             rightTextX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
@@ -186,41 +208,26 @@
     formatNumber(num, deci){
       return decimal(num, deci)
     },//FORMAT NUMBER
-    maxValue(){
-      return Math.max(Math.abs(this.VL), Math.abs(this.VR), Math.abs(this.VC))
-    },
-    plotPath(x, y, plotArr){
-      switch(true){
-        case (this.maxValue() < 10):
-          this.SF = 5
-          break
-        case (this.maxValue() < 40):
-          this.SF = 1
-          break
-        case (this.maxValue() < 100):
-          this.SF = 0.5
-          break
-        case (this.maxValue() > 100):
-          this.SF = 0.25
-          break
-      }
-
-      let XF = 240/(this.L + this.Lo)
-      let YF = this.SF
-      let pathStr = `M ${x} ${y}`
-    
-      plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
-
-      pathStr += ` L ${((this.L + this.Lo)*XF + x)} ${(y)}`
-
-      return pathStr
-    },//MOMENT PATH
    
   } //METHODS
 }; //EXPORT DEFAULT
 </script>
 
 <style scoped>
+.pointLoad{
+  stroke: #adc454;
+  stroke-width: 2px;
+}
+.pointLoadText{
+  text-anchor: middle;
+  font-size: 10px;
+}
+.uniformLoad{
+  stroke: #000;
+  stroke-width: 1px;
+  fill: #adc454;
+  fill-opacity: 1px;
+}
 .span{
   stroke: #000;
   stroke-width: 3px;
@@ -234,12 +241,6 @@
   stroke: #000;
   stroke-width: 5px; 
 }
-.plotFill{
-  fill: blue; 
-  stroke: blue; 
-  stroke-width: 1px; 
-  fill-opacity: 0.25;
-}
 .valueText{
 
 }
@@ -247,5 +248,5 @@
   text-anchor: middle;
   stroke-width: 3; 
   font-size: 20px;
-}   
+}
 </style>

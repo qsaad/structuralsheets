@@ -102,18 +102,6 @@
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:graphics>
       {{design}}
-      <plot-wall-load
-        title = "LOADS"
-        :type = "type"
-        :w = "w"
-        :wo = "wo"
-        :PL = "PL"
-        :L = "L"
-        :Lo = "Lc"
-        :RL = "params.RL"
-        :RR = "params.RR"
-      ></plot-wall-load>
-
       <plot-beam-load
         title = "LOADS"
         :type = "type"
@@ -170,7 +158,9 @@
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-import PlotWallLoad from "../plot/PlotWallLoad.vue"
+//import PlotWallLoad from "../plot/PlotWallLoad.vue"
+
+//import ParapetWall from '../../classes/analysis/clsParapetWall'
 
 import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
 import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
@@ -188,8 +178,7 @@ import { decimal } from "../../utils/mathLib"
 export default {
   name: "ParapetWall",
   components: {
-    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection,
-    PlotWallLoad
+    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection
   },
   mixins: [layoutMixin],
   data() {

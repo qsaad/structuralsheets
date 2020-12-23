@@ -13,8 +13,10 @@
         </g>
         
         <!-- RIGHT SUPPORT -->
-        <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
-        <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
+        <g>
+          <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+          <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
+          </g>
 
         <!-- LEFT VALUE -->
         <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(DL, 2) }} in</text>
@@ -29,7 +31,7 @@
         <path :d="plotPath(30,150, plotArr)" class="deflectionFill"/>
         
         <!-- TITLE -->
-        <text x="150" y="280" text-anchor="middle" class="titleText">{{ title }}</text>
+        <text :x="titleX" :y="titleY" text-anchor="middle" class="titleText">{{ title }}</text>
       </svg>
 </template>
 
@@ -53,7 +55,9 @@
   },
   data() {
     return {
-      SF: 0
+      SF: 0,
+      titleX: 150,
+      titleY: 280, 
     }; //RETURN
   }, //DATA
   created() {}, //CREATED

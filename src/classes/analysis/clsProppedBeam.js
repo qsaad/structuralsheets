@@ -94,7 +94,7 @@ export default class ProppedBeam {
         return Math.max(...V)
     }
 
-     VL(){
+    VL(){
         let arr = this.Vx()
         return head(arr)
     }
@@ -102,6 +102,10 @@ export default class ProppedBeam {
     VR(){
         let arr = this.Vx()
         return last(arr)
+    }
+
+    VC(){
+      return 0
     }
 
     plotV(){
@@ -141,7 +145,15 @@ export default class ProppedBeam {
 
     //MAXIMUM SPAN MOMENT
     Mmax(){
-        return Math.max(...this.Mx())
+      return Math.max(...this.Mx())
+    }
+
+    ML(){
+      return 0
+    }
+
+    MC(){
+      return Math.max(...this.Mx())
     }
 
     //MAXIMUM FIXED MOMENT
@@ -168,6 +180,10 @@ export default class ProppedBeam {
             }
         })
         return parseFloat(first(compact(arrX)))
+    }
+
+    xcr(){
+      return 0
     }
 
     //FLEXURE PLOT COORDINATE (X,M)
@@ -211,7 +227,19 @@ export default class ProppedBeam {
 
     //MAXIMUM DEFLECTION
     Dmax(){
-        return Math.max(...this.Dx())
+      return Math.max(...this.Dx())
+    }
+
+    DL(){
+      return 0
+    }
+
+    DC(){
+      return Math.max(...this.Dx())
+    }
+
+    DR(){
+      return 0
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
@@ -237,18 +265,24 @@ export default class ProppedBeam {
       return{
         Lx: this.Lx(),
         Mmax: this.Mmax(),
+        ML: this.ML(),
+        MC: this.MC(),
         MR: this.MR(),
         Mx: this.Mx(),
         xm: this.xm(),
         xc: this.xc(),
+        xcr: this.xcr(),
         RL: this.RL(),
         RR: this.RR(),
-        Vx: this.Vx(),
         VL: this.VL(),
         VR: this.VR(),
+        VC: this.VC(),
+        Vx: this.Vx(),
         Dmax: this.Dmax(),
+        DL: this.DL(),
+        DC: this.DC(),
+        DR: this.DR(),
         Dx: this.Dx(),
-        xd: this.xd(),
         plotM: this.plotM(),
         plotV: this.plotV(),
         plotD: this.plotD(),

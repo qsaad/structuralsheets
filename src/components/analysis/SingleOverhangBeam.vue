@@ -91,6 +91,8 @@
       <plot-beam-load
         title = "LOADS"
         type = "Overhang"
+        :w = "w"
+        :wo = "w"
         :PL = "PL"
         :L = "L"
         :Lo = "Lo"
@@ -104,10 +106,12 @@
         :L = "L"
         :Lo = "Lo"
         :plotArr = "params.plotM"
-        :MC = "params.Mmax"
-        :MR = "params.Mc"
+        :ML = "params.ML"
+        :MC = "params.MC"
+        :MR = "params.MR"
         :xm = "params.xm"
         :xc = "params.xc"
+        :xcr = "params.xcr"
       ></plot-beam-moment>
 
       <plot-beam-deflection
@@ -116,8 +120,10 @@
         :L = "L"
         :Lo = "Lo"
         :plotArr = "params.plotD"
-        :DC = "params.Dmax"
-        :DR = "params.Dc"
+        :DL = "params.DL"
+        :DC = "params.DC"
+        :DL = "params.DR"
+        :xd = "params.xd"
       ></plot-beam-deflection>
 
       <plot-beam-shear

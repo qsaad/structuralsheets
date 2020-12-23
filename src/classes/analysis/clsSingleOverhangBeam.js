@@ -207,7 +207,25 @@ export default class SingleOverhangBeam {
         return val > 0 ? val : 0
     }
 
-    Mc(){
+    // Mc(){
+    //   let arrM = filter(this.Mx(), x => x < 0)
+    //   let val = Math.min(...arrM)
+
+    //   return val < 0 ? val : 0
+    // }
+
+    ML(){
+      return 0
+    }
+
+    MC(){
+      let arrM = filter(this.Mx(), x => x > 0)
+        let val = Math.max(...arrM)
+
+        return val > 0 ? val : 0
+    }
+
+    MR(){
       let arrM = filter(this.Mx(), x => x < 0)
       let val = Math.min(...arrM)
 
@@ -233,6 +251,10 @@ export default class SingleOverhangBeam {
             }
         })
         return first(compact(arrX))
+    }
+
+    xcr(){
+      return 0
     }
 
     //FLEXURE PLOT COORDINATE (X,M)
@@ -300,8 +322,20 @@ export default class SingleOverhangBeam {
     Dmax(){
         return Math.max(...this.Dx())
     }
-    Dc(){
-        return last(this.Dx())
+    // Dc(){
+    //     return last(this.Dx())
+    // }
+
+    DL(){
+      return 0
+    }
+
+    DC(){
+      return Math.max(...this.Dx())
+    }
+
+    DR(){
+      return last(this.Dx())
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
@@ -327,20 +361,24 @@ export default class SingleOverhangBeam {
       return{
         Lx: this.Lx(),
         Mmax: this.Mmax(),
-        Mc: this.Mc(),
+        ML: this.ML(),
+        MC: this.MC(),
+        MR: this.MR(),
         Mx: this.Mx(),
         xm: this.xm(),
         xc: this.xc(),
+        xcr: this.xcr(),
         RL: this.RL(),
         RR: this.RR(),
-        Vx: this.Vx(),
         VL: this.VL(),
         VR: this.VR(),
         VC: this.VC(),
+        Vx: this.Vx(),
         Dmax: this.Dmax(),
-        Dc: this.Dc(),
+        DL: this.DL(),
+        DC: this.DC(),
+        DR: this.DR(),
         Dx: this.Dx(),
-        xd: this.xd(),
         plotM: this.plotM(),
         plotV: this.plotV(),
         plotD: this.plotD(),

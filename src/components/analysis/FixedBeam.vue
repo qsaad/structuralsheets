@@ -88,6 +88,7 @@
       <plot-beam-load
         title = "LOADS-1"
         type = "Fixed"
+        :w = "w"
         :PL = "PL"
         :L = "L"
         :RL = "params.RL"
@@ -112,7 +113,10 @@
         type = "Fixed"
         :L = "L"
         :plotArr = "params.plotD"
-        :DC = "params.Dmax"
+        :DL = "params.DL"
+        :DC = "params.DC"
+        :DL = "params.DR"
+        :xd = "params.xd"
       ></plot-beam-deflection>
 
       <plot-beam-shear
@@ -122,6 +126,7 @@
         :plotArr = "params.plotV"
         :VL = "params.VL"
         :VR = "params.VR"
+        :VC = "params.VC"
       ></plot-beam-shear>
 
 		</template>

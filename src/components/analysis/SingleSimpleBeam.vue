@@ -88,6 +88,7 @@
       <plot-beam-load
         title = "LOADS"
         type = "Simple"
+        :w = "w"
         :PL = "PL"
         :L = "L"
         :RL = "params.RL"
@@ -99,8 +100,12 @@
         type = "Simple"
         :L = "L"
         :plotArr = "params.plotM"
-        :MC = "params.Mmax"
+        :ML = "params.ML"
+        :MC = "params.MC"
+        :MR = "params.MR"
         :xm = "params.xm"
+        :xc = "params.xc"
+        :xcr = "params.xcr"
       ></plot-beam-moment>
 
       <plot-beam-deflection
@@ -108,7 +113,10 @@
         type = "Simple"
         :L = "L"
         :plotArr = "params.plotD"
-        :DC = "params.Dmax"
+        :DL = "params.DL"
+        :DC = "params.DC"
+        :DL = "params.DR"
+        :xd = "params.xd"
       ></plot-beam-deflection>
 
       <plot-beam-shear
@@ -118,6 +126,7 @@
         :plotArr = "params.plotV"
         :VL = "params.VL"
         :VR = "params.VR"
+        :VC = "params.VC"
       ></plot-beam-shear>
    
 		</template>
@@ -195,7 +204,6 @@ export default {
     formatNumber(num, deci){
       return decimal(num, deci)
     },//FORMAT NUMBER
-   
     addPL(){
       let id = Math.floor(Math.random() * 10000)
       this.PL.push({id: id, P: this.P, a: this.a})

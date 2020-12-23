@@ -13,7 +13,10 @@
         </g>
 
         <!-- UNIFORM LOAD -->
-        <rect x="30" y="130" width="240" height="10" class="uniformLoad"></rect>
+        <g>
+          <rect x="30" y="130" :width="params.loadWidth" height="10" class="uniformLoad"></rect>
+          <rect :x="30+params.loadWidth" :y="130 + 10*(1-wo/w)" :width="240 - params.loadWidth" :height="10*wo/w" class="uniformLoad" v-if="type == 'Overhang'"></rect>
+        </g>
 
         <!-- BEAM SPAN -->
         <line x1="30"  y1="150" x2="270" y2="150" class="span"/>
@@ -25,9 +28,10 @@
         </g>
         
         <!-- RIGHT SUPPORT -->
-        <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
-        <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
-
+        <g>
+          <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+          <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
+        </g>
         <!-- LEFT REACTION -->
         <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(RL, 2) }} k</text>
         
@@ -82,6 +86,8 @@
             leftSupportY: 157,
             rightSupportX: 267.5,
             rightSupportY: 157,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
@@ -105,6 +111,8 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
@@ -128,6 +136,8 @@
             leftSupportY: 157,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: false,
             isCenterText: false,
@@ -151,6 +161,8 @@
             leftSupportY: 150,
             rightSupportX: 270,
             rightSupportY: 150,
+            //UNIFORM LOAD
+            loadWidth: 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,
@@ -174,6 +186,8 @@
             leftSupportY: 157,
             rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             rightSupportY: 157,
+            //UNIFORM LOAD
+            loadWidth: (this.L)/(this.L+this.Lo) * 240,
             //TEXT VISIBILITY
             isLeftText: true,
             isCenterText: false,

@@ -116,6 +116,10 @@ export default class SimpleBeam {
         return last(arr)
     }
 
+    VC(){
+      return 0
+    }
+
     plotV(){
         return zipWith(this.Lx(), this.Vx(),(x,V)=>{
             return {x:x,y:V}
@@ -156,12 +160,32 @@ export default class SimpleBeam {
         return Math.max(...this.Mx())
     }
 
+    ML(){
+      return 0
+    }
+
+    MC(){
+      return Math.max(...this.Mx())
+    }
+
+    MR(){
+      return 0
+    }
+
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
     xm(){
         let index = findIndex(this.Mx(), (x) => x == this.Mmax())
         let arr = this.Lx()
 
         return parseFloat(arr[index])
+    }
+
+    xc(){
+      return 0
+    }
+
+    xcr(){
+      return 0
     }
 
     //FLEXURE PLOT COORDINATE (X,M)
@@ -205,7 +229,19 @@ export default class SimpleBeam {
 
     //MAXIMUM DEFLECTION
     Dmax(){
-        return Math.max(...this.Dx())
+      return Math.max(...this.Dx())
+    }
+
+    DL(){
+      return 0
+    }
+
+    DC(){
+      return Math.max(...this.Dx())
+    }
+
+    DR(){
+      return 0
     }
 
     //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
@@ -231,16 +267,24 @@ export default class SimpleBeam {
       return{
         Lx: this.Lx(),
         Mmax: this.Mmax(),
+        ML: this.ML(),
+        MC: this.MC(),
+        MR: this.MR(),
         Mx: this.Mx(),
         xm: this.xm(),
+        xc: this.xc(),
+        xcr: this.xcr(),
         RL: this.RL(),
         RR: this.RR(),
-        Vx: this.Vx(),
         VL: this.VL(),
         VR: this.VR(),
+        VC: this.VC(),
+        Vx: this.Vx(),
         Dmax: this.Dmax(),
+        DL: this.DL(),
+        DC: this.DC(),
+        DR: this.DR(),
         Dx: this.Dx(),
-        xd: this.xd(),
         plotM: this.plotM(),
         plotV: this.plotV(),
         plotD: this.plotD(),

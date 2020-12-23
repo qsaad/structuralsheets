@@ -22,16 +22,6 @@ export default class CantileverBeam {
         return map(arr, x => x)
     }
 
-    //POINT LOAD - CONVERT STRING TO ARRAY
-    // PL(){
-    //     let P = map(split(this.P,','), (x) => toNumber(x))
-    //     let a = map(split(this.a,','), (x) => toNumber(x))
-
-    //     return zipWith(P, a,(P,a)=>{
-    //         return {P:P,a:a}
-    //     })
-    // }
-
     //LOADING DIAGRAM
     plotL(){
         return map(this.PL, (item)=>{
@@ -102,8 +92,11 @@ export default class CantileverBeam {
         let arr = this.Vx()
         return last(arr)
     }
-   
 
+    VC(){
+      return 0
+    }
+   
     plotV(){
         return zipWith(this.Lx(), this.Vx(),(x,V)=>{
             return {x:x,y:V}
@@ -152,17 +145,30 @@ export default class CantileverBeam {
         return last(arr)
     }
 
-    // Mc(){
-    //   return this.Mmax()
-    // }
+    ML(){
+      return 0
+    }
 
-    //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
-    // xm(){
-    //     let index = findIndex(this.Mx(), (x) => x == this.Mmax())
-    //     let arr = this.Lx()
+    MC(){
+      return 0
+    }
 
-    //     return arr[index]
-    // }
+    MR(){
+      let arr = this.Mx()
+      return last(arr)
+    }
+
+    xm(){
+      return 0
+    }
+
+    xc(){
+      return 0
+    }
+
+    xcr(){
+      return 0
+    }
 
     //FLEXURE PLOT COORDINATE (X,M)
     plotM(){
@@ -214,17 +220,22 @@ export default class CantileverBeam {
         let arr = this.Dx()
         return first(arr)
     }
-    Dc(){
+    
+    DL(){
       return this.Dmax()
     }
 
-    //DISTANCE FROM LEFT SUPPORT TO MAXIMUM MOMENT
-    // xd(){
-    //     let index = findIndex(this.Dx(), (x) => x == this.Dmax())
-    //     let arr = this.Lx()
+    DC(){
+      return 0
+    }
 
-    //     return arr[index]
-    // }
+    DR(){
+      return 0
+    }
+
+    xd(){
+      return 0
+    }
 
     //DEFLECTION PLOT COORDINATE (X,D)
     plotD(){
@@ -240,13 +251,23 @@ export default class CantileverBeam {
       return{
         Lx: this.Lx(),
         Mmax: this.Mmax(),
+        ML: this.ML(),
+        MC: this.MC(),
+        MR: this.MR(),
         Mx: this.Mx(),
+        xm: this.xm(),
+        xc: this.xc(),
+        xcr: this.xcr(),
         RL: this.RL(),
         RR: this.RR(),
-        Vx: this.Vx(),
         VL: this.VL(),
         VR: this.VR(),
+        VC: this.VC(),
+        Vx: this.Vx(),
         Dmax: this.Dmax(),
+        DL: this.DL(),
+        DC: this.DC(),
+        DR: this.DR(),
         Dx: this.Dx(),
         plotM: this.plotM(),
         plotV: this.plotV(),
