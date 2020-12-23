@@ -31,7 +31,7 @@
         <path :d="plotPath(30,150, plotArr)" class="deflectionFill" :transform="params.plotTransform"/>
         
         <!-- TITLE -->
-        <text :x="titleX" :y="titleY" text-anchor="middle" class="titleText">{{ title }}</text>
+        <text x="20" y="20" text-anchor="start" class="titleText">DEFLECTION</text>
       </svg>
 </template>
 
@@ -113,7 +113,7 @@
             rightTextX: 267.5,
             rightTextY: 180,
             //TRANSFORM
-            plotTransform: 'rotate(-90 150 150)'
+            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
         case (this. type == 'Cantilever'):
@@ -132,13 +132,13 @@
             isRightText: false,
             //TEXT LOCATION
             leftTextX: 90,
-            leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
-            rightTextX: 270,
-            rightTextY: 180,
+            leftTextY: 35,
+            centerTextX: 0,
+            centerTextY: 0,
+            rightTextX: 0,
+            rightTextY: 0,
             //TRANSFORM
-            plotTransform: 'rotate(-90 150 150)'
+            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
         case (this. type == 'Fixed'):
@@ -255,7 +255,6 @@
 
 }
 .titleText{
-  text-anchor: middle;
   stroke-width: 3; 
   font-size: 20px;
 }  

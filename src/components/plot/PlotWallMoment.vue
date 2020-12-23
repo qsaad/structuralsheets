@@ -37,7 +37,7 @@
         <path :d="plotPath(30,150, plotArr)" class="plotFill" :transform="params.plotTransform"/>
         
         <!-- TITLE -->
-        <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
+        <text x="20" y="20" text-anchor="start" class="titleText">MOMENT</text>
       </svg>
 </template>
 
@@ -115,14 +115,14 @@
             isCenterText: true,
             isRightText: true,
             //TEXT LOCATION
-            leftTextX: 170,
-            leftTextY: 275,
+            leftTextX: 0,
+            leftTextY: 0,
             centerTextX: 140,
             centerTextY: 150,
             rightTextX: 170,
-            rightTextY: 35,
+            rightTextY: 275,
             //TRANSFORM
-            plotTransform: 'rotate(-90 150 150)'
+            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
         case (this. type == 'Cantilever'):
@@ -140,14 +140,14 @@
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
-            leftTextX: 170,
-            leftTextY: 275,
-            centerTextX: 140,
-            centerTextY: 150,
+            leftTextX: 0,
+            leftTextY: 0,
+            centerTextX: 0,
+            centerTextY: 0,
             rightTextX: 170,
-            rightTextY: 35,
+            rightTextY: 275,
             //TRANSFORM
-            plotTransform: 'rotate(-90 150 150)'
+            plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
         case (this. type == 'Fixed'):
@@ -190,8 +190,8 @@
             isCenterText: true,
             isRightText: true,
             //TEXT LOCATION
-            leftTextX: 10,
-            leftTextY: 180,
+            leftTextX: 0,
+            leftTextY: 0,
             centerTextX: 140,
             centerTextY: 300-(this.L)/(this.L+this.Lo) * 240 * 0.5 -30 + 2.5,
             rightTextX: 170,
@@ -268,7 +268,6 @@
 
 }
 .titleText{
-  text-anchor: middle;
   stroke-width: 3; 
   font-size: 20px;
 } 

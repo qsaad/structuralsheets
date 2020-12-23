@@ -115,7 +115,7 @@
       ></plot-beam-load>
 
        <plot-beam-moment
-        title = "MOMENT DIAGRAM"
+        title = "MOMENT"
         :type = "type"
         :L = "L"
         :Lo = "Lc"
@@ -129,7 +129,7 @@
       ></plot-beam-moment>
 
       <plot-beam-deflection
-        title = "DEFLECTION DIAGRAM"
+        title = "DEFLECTION"
         :type = "type"
         :L = "L"
         :Lo = "Lc"
@@ -141,7 +141,7 @@
       ></plot-beam-deflection>
 
       <plot-beam-shear
-        title = "SHEAR DIAGRAM"
+        title = "SHEAR"
         :type = "type"
         :L = "L"
         :Lo = "Lc"

@@ -34,7 +34,12 @@
         
         <!-- MOMENT PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
-        
+
+        <!-- CAPACITY PLOT -->
+        <rect x="30" y="150" width="70" height="20" class="plotCapacity"></rect>
+        <rect x="100" y="150" width="70" height="30" class="plotCapacity"></rect>
+        <rect x="170" y="150" width="100" height="20" class="plotCapacity"></rect>
+
         <!-- TITLE -->
         <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
       </svg>
@@ -65,7 +70,12 @@
     return {
       SF: 0,
       titleX: 150,
-      titleY: 280, 
+      titleY: 280,
+      plotC:[
+        {value:20, start:0, end: 5},
+        {value:40, start:5, end: 8},
+        {value:20, start:12, end: 12}
+      ] 
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -224,7 +234,6 @@
       if(this.type == 'Propped' || 'Cantilever' || 'Fixed'){
         pathStr += ` L ${(this.L*XF + x)} ${(y)}`
       }
-      
 
       return pathStr
     },//MOMENT PATH
@@ -246,6 +255,13 @@
 .fixedSupport{
   stroke: #000;
   stroke-width: 5px; 
+}
+.plotCapacity{
+  fill: #eedd00; 
+  stroke: #eedd00; 
+  stroke-width: 1px; 
+  fill-opacity: 0.4;
+  stroke-opacity: 0.4;
 }
 .plotFill{
   fill: blue; 

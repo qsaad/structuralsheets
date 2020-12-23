@@ -43,7 +43,8 @@
         <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="start" v-if="params.isRightText">{{ formatNumber(RR, 2)}} k</text>
 
         <!-- TITLE -->
-        <text :x="titleX" :y="titleY" class="titleText">{{ title }}</text>
+        <text x="30" y="30" text-anchor="start" class="titleText">LOADS</text>
+        <text x="30" y="270" text-anchor="end" class="titleText">REACTIONS</text>
     </svg>
   
 </template>
@@ -70,8 +71,7 @@
   },
   data() {
     return {
-      titleX: 10,
-      titleY: 10,  
+     
     }; //RETURN
   }, //DATA
   created() {}, //CREATED
@@ -99,8 +99,8 @@
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 0,
+            centerTextY: 0,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
@@ -125,13 +125,12 @@
             isRightText: true,
             //TEXT LOCATION
             leftTextX: 170,
-            leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            leftTextY: 35,
+            centerTextX: 0,
+            centerTextY: 0,
             rightTextX: 170,
-            rightTextY: 35,
+            rightTextY: 275,
             //TRANSFORM
-            //plotTransform: 'rotate(90 150 150)'
             plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
@@ -152,14 +151,13 @@
             isCenterText: false,
             isRightText: true,
             //TEXT LOCATION
-            leftTextX: 170,
-            leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            leftTextX: 0,
+            leftTextY: 0,
+            centerTextX: 0,
+            centerTextY: 0,
             rightTextX: 170,
-            rightTextY: 35,
+            rightTextY: 275,
             //TRANSFORM
-            //plotTransform: 'rotate(90 150 150)'
             plotTransform: 'rotate(90 150 150) scale(1,-1) translate(0, -300)'
           }
           break
@@ -182,8 +180,8 @@
             //TEXT LOCATION
             leftTextX: 170,
             leftTextY: 275,
-            centerTextX: 150,
-            centerTextY: 140,
+            centerTextX: 0,
+            centerTextY: 0,
             rightTextX: 170,
             rightTextY: 35,
             //TRANSFORM
@@ -212,7 +210,7 @@
             centerTextX: 150,
             centerTextY: 140,
             rightTextX: 170,
-            rightTextY: 300-(this.L)/(this.L+this.Lo) * 240 -30 + 2.5,
+            rightTextY: 300 -(this.L)/(this.L+this.Lo) * 240 -30 + 2.5,
             plotTransform: 'rotate(-90 150 150)'
           }
           break
@@ -260,7 +258,6 @@
 
 }
 .titleText{
-  text-anchor: start;
   stroke-width: 3; 
   font-size: 20px;
 }
