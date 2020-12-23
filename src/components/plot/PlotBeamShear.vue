@@ -8,20 +8,20 @@
         
          <!-- LEFT SUPPORT -->
         <g v-if="type != 'Cantilever'">
-          <circle cx="32.5" cy="157" :r="5" class="simpleSupport" v-if="params.isLeftSupportSimple"/>
-          <line x1="30"  y1="143" x2="30"   y2="157" class="fixedSupport" v-else/>
-          <!-- LEFT VALUE -->
-          <text x="10" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(VL, 2) }} k</text>
+          <circle :cx="params.leftSupportX" :cy="params.leftSupportY" r="5" class="simpleSupport" v-if="params.isLeftSupportSimple"/>
+          <line :x1="params.leftSupportX" :y1="params.leftSupportY-7" :x2="params.leftSupportX" :y2="params.leftSupportY+7" class="fixedSupport" v-else/>
         </g>
         
-       
         <!-- RIGHT SUPPORT -->
-        <circle :cx="params.rightSupportX" cy="157" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
-        <line x1="270"  y1="143" x2="270"   y2="157" class="fixedSupport" v-else/>
+        <circle :cx="params.rightSupportX" :cy="params.rightSupportY" :r="5" class="simpleSupport" v-if="params.isRightSupportSimple"/>
+        <line :x1="params.rightSupportX"  :y1="params.rightSupportY-7" :x2="params.rightSupportX"   :y2="params.rightSupportY+7" class="fixedSupport" v-else/>
+
+        <!-- LEFT VALUE -->
+        <text :x="params.leftTextX" :y="params.leftTextY" text-anchor="start" v-if="params.isLeftText">{{ formatNumber(VL, 2) }} k</text>
         
         <!-- RIGHT VALUE -->
-        <text :x="params.rightSupportX" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
-        <text :x="params.rightSupportX" :y="params.rightTextY -40" text-anchor="start" v-if="params.isRightText" v-if="VC != 0">{{ formatNumber(VC, 2) }} k </text>
+        <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
+        <text :x="params.rightTextX" :y="params.rightTextY -40" text-anchor="start" v-if="params.isRightText" v-if="VC != 0">{{ formatNumber(VC, 2) }} k </text>
         
         <!-- MOMENT PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
@@ -62,66 +62,116 @@
       switch(true){
         case (this. type == 'Simple'):
           return {
+             //SUPPORT VISIBILITY
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
+            //SUPPORT LOCATION
+            leftSupportX: 32.5,
+            leftSupportY: 157,
             rightSupportX: 267.5,
+            rightSupportY: 157,
+            //TEXT VISIBILITY
             isLeftText: true,
-            leftTextY: 140,
             isCenterText: false,
-            centerTextY: 0,
             isRightText: true,
+            //TEXT LOCATION
+            leftTextX: 10,
+            leftTextY: 140,
+            centerTextX: 150,
+            centerTextY: 140,
+            rightTextX: 290,
             rightTextY: 180,
           }
           break
         case (this. type == 'Propped'):
           return {
+            //SUPPORT VISIBILITY
             isLeftSupportSimple: true,
             isRightSupportSimple: false,
-            rightSupportX: 267.5,
+            //SUPPORT LOCATION
+            leftSupportX: 32.5,
+            leftSupportY: 157,
+            rightSupportX: 270,
+            rightSupportY: 150,
+            //TEXT VISIBILITY
             isLeftText: true,
-            leftTextY: 140,
             isCenterText: false,
-            centerTextY: 0,
             isRightText: true,
+            //TEXT LOCATION
+            leftTextX: 10,
+            leftTextY: 140,
+            centerTextX: 150,
+            centerTextY: 140,
+            rightTextX: 290,
             rightTextY: 180,
           }
           break
         case (this. type == 'Cantilever'):
           return {
+            //SUPPORT VISIBILITY
             isLeftSupportSimple: false,
             isRightSupportSimple: false,
-            rightSupportX: 267.5,
-            isLeftText: true,
-            leftTextY: 180,
+            //SUPPORT LOCATION
+            leftSupportX: 32.5,
+            leftSupportY: 157,
+            rightSupportX: 270,
+            rightSupportY: 150,
+            //TEXT VISIBILITY
+            isLeftText: false,
             isCenterText: false,
-            centerTextY: 0,
             isRightText: true,
+            //TEXT LOCATION
+            leftTextX: 10,
+            leftTextY: 180,
+            centerTextX: 150,
+            centerTextY: 140,
+            rightTextX: 290,
             rightTextY: 180,
           }
           break
         case (this. type == 'Fixed'):
           return {
+            //SUPPORT VISIBILITY
             isLeftSupportSimple: false,
             isRightSupportSimple: false,
-            rightSupportX: 267.5,
+            //SUPPORT LOCATION
+            leftSupportX: 30,
+            leftSupportY: 150,
+            rightSupportX: 270,
+            rightSupportY: 150,
+            //TEXT VISIBILITY
             isLeftText: true,
-            leftTextY: 140,
             isCenterText: false,
-            centerTextY: 0,
             isRightText: true,
+            //TEXT LOCATION
+            leftTextX: 10,
+            leftTextY: 140,
+            centerTextX: 150,
+            centerTextY: 140,
+            rightTextX: 290,
             rightTextY: 180,
           }
           break
         case (this. type == 'Overhang'):
           return {
+            //SUPPORT VISIBILITY
             isLeftSupportSimple: true,
             isRightSupportSimple: true,
+            //SUPPORT LOCATION
+            leftSupportX: 32.5,
+            leftSupportY: 157,
             rightSupportX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
+            rightSupportY: 157,
+            //TEXT VISIBILITY
             isLeftText: true,
-            leftTextY: 140,
             isCenterText: false,
-            centerTextY: 0,
             isRightText: true,
+            //TEXT LOCATION
+            leftTextX: 10,
+            leftTextY: 140,
+            centerTextX: 150,
+            centerTextY: 140,
+            rightTextX: (this.L)/(this.L+this.Lo) * 240 + 30 - 2.5,
             rightTextY: 180,
           }
           break
