@@ -103,7 +103,7 @@
     <template v-slot:graphics>
       {{design}}
       <plot-wall-load
-        title = "LOADS"
+        title = "LOADS-1"
         :type = "type"
         :w = "w"
         :wo = "wo"
@@ -114,19 +114,7 @@
         :RR = "params.RR"
       ></plot-wall-load>
 
-      <plot-beam-load
-        title = "LOADS"
-        :type = "type"
-        :w = "w"
-        :wo = "wo"
-        :PL = "PL"
-        :L = "L"
-        :Lo = "Lc"
-        :RL = "params.RL"
-        :RR = "params.RR"
-      ></plot-beam-load>
-
-       <plot-beam-moment
+      <plot-wall-moment
         title = "MOMENT DIAGRAM"
         :type = "type"
         :L = "L"
@@ -138,9 +126,9 @@
         :xm = "params.xm"
         :xc = "params.xc"
         :xcr = "params.xcr"
-      ></plot-beam-moment>
+      ></plot-wall-moment>
 
-      <plot-beam-deflection
+      <plot-wall-deflection
         title = "DEFLECTION DIAGRAM"
         :type = "type"
         :L = "L"
@@ -148,11 +136,11 @@
         :plotArr = "params.plotD"
         :DL = "params.DL"
         :DC = "params.DC"
-        :DL = "params.DR"
+        :DR = "params.DR"
         :xd = "params.xd"
-      ></plot-beam-deflection>
+      ></plot-wall-deflection>
 
-      <plot-beam-shear
+      <plot-wall-shear
         title = "SHEAR DIAGRAM"
         :type = "type"
         :L = "L"
@@ -161,21 +149,19 @@
         :VL = "params.VL"
         :VR = "params.VR"
         :VC = "params.VC"
-      ></plot-beam-shear>
-
-    
+      ></plot-wall-shear>
+      
 		</template>
   </module-layout>
 </template>
 
 <script>
 import layoutMixin from "../../mixins/layoutMixin"
-import PlotWallLoad from "../plot/PlotWallLoad.vue"
 
-import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
-import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
-import PlotBeamShear from "../plot/PlotBeamShear.vue"
-import PlotBeamDeflection from "../plot/PlotBeamDeflection.vue"
+import PlotWallLoad from "../plot/PlotWallLoad.vue"
+import PlotWallMoment from "../plot/PlotWallMoment.vue"
+import PlotWallDeflection from "../plot/PlotWallDeflection.vue"
+import PlotWallShear from "../plot/PlotWallShear.vue"
 
 import SimpleBeam from '../../classes/analysis/clsSimpleBeam'
 import CantileverBeam from '../../classes/analysis/clsCantileverBeam'
@@ -188,8 +174,7 @@ import { decimal } from "../../utils/mathLib"
 export default {
   name: "ParapetWall",
   components: {
-    PlotBeamLoad, PlotBeamMoment, PlotBeamShear, PlotBeamDeflection,
-    PlotWallLoad
+    PlotWallLoad, PlotWallMoment, PlotWallDeflection, PlotWallShear
   },
   mixins: [layoutMixin],
   data() {
@@ -201,6 +186,8 @@ export default {
       Ix: 48,
       E: 29000,
       PL: [],
+      P:0,
+      a: 0,
       editedPL: {id: 0,P: 0,a: 0},
       editedIndex: -1,
       typeList: ['Simple', 'Cantilever','Propped','Fixed','Overhang'],
