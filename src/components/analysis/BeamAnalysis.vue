@@ -4,7 +4,7 @@
     <!-- HEADER -->
     <!-- ++++++++++++++++++++++++++ -->
     <template v-slot:header>
-      BEAM ANAL
+      BEAM ANALYSIS
 		</template>
     <!-- ++++++++++++++++++++++++++ -->
     <!--INPUTS -->
@@ -30,6 +30,15 @@
         </custom-text-field>
         <custom-text-field :label="`Overhang Load (k/ft)`" v-if="type == 'Overhang'">
 				  <input type="text" class="input is-small" v-model.number="wo">
+        </custom-text-field>
+        <custom-text-field :label="`Lub Top Flg (ft)`">
+				  <input type="text" class="input is-small" v-model="Lub_TF">
+        </custom-text-field>
+        <custom-text-field :label="`Lub Bot Flg (ft)`">
+				  <input type="text" class="input is-small" v-model="Lub_BF">
+        </custom-text-field>
+        <custom-text-field :label="`Lub Shear (ft)`">
+				  <input type="text" class="input is-small" v-model="Lub_V">
         </custom-text-field>
       </input-group><!-- INPUT-GROUP -->
 
@@ -126,6 +135,8 @@
         :xm = "params.xm"
         :xc = "params.xc"
         :xcr = "params.xcr"
+        :capArrTop = "capArrTop"
+        :capArrBot = "capArrBot"
       ></plot-beam-moment>
 
       <plot-beam-deflection
@@ -136,7 +147,7 @@
         :plotArr = "params.plotD"
         :DL = "params.DL"
         :DC = "params.DC"
-        :DL = "params.DR"
+        :DR = "params.DR"
         :xd = "params.xd"
       ></plot-beam-deflection>
 
@@ -149,6 +160,7 @@
         :VL = "params.VL"
         :VR = "params.VR"
         :VC = "params.VC"
+        :capArrShear = "capArrShear"
       ></plot-beam-shear>
 
     
@@ -157,10 +169,8 @@
 </template>
 
 <script>
+import {zipWith, map, split, toNumber} from 'lodash'
 import layoutMixin from "../../mixins/layoutMixin"
-//import PlotWallLoad from "../plot/PlotWallLoad.vue"
-
-//import ParapetWall from '../../classes/analysis/clsParapetWall'
 
 import PlotBeamLoad from "../plot/PlotBeamLoad.vue"
 import PlotBeamMoment from "../plot/PlotBeamMoment.vue"
@@ -199,9 +209,25 @@ export default {
       warnings: [],
       //GRAPHICS
       params: {},
+      //CAPACITY
+      Lub_TF: [],
+      capArrBot:[],
+      Lub_BF: [],
+      capArrTop: [],
+      Lub_V: [],
+      capArrShear:[]
     }; //RETURN
   }, //DATA
-  created() {}, //CREATED
+  created() {
+    // this.Lub_V = [2,4,4,2,4]
+    //this.Lub_TF = [2,4,6,4]
+    // this.Lub_BF  =[4,8,4]
+
+    this.Lub_V = []
+    this.Lub_TF = []
+    this.Lub_BF  =[]
+
+  }, //CREATED
   mounted() {}, //MOUNTED
   watch: {}, //WATCH
   computed: {
@@ -211,11 +237,15 @@ export default {
         {type: 'Length', status: this.Lo <= 0, title: "Lo cannot be negative/zero"},
         {type: 'Load', status: this.w < 0, title: "w cannot be negative"},
         {type: 'Load', status: this.wo < 0, title: "wo cannot be negative"},
+        {type: 'Length', status: this.checkUnbracedLengthSum(this.Lub_V), title: "Sum of Shear unbraced Lengths must be equal to Total Beam Span"},
+        {type: 'Length', status: this.checkUnbracedLengthSum(this.Lub_TF), title: "Sum of Top Flg unbraced Lengths must be equal to Total Beam Span"},
+        {type: 'Length', status: this.checkUnbracedLengthSum(this.Lub_BF), title: "Sum of Bot Flg unbraced Lengths must be equal to Total Beam Span"},
       ]
     },//GENERATE WARNINGS
     Lc(){
       return this.type == "Overhang" ? this.Lo : 0
     },
+   
     design(){
       let objData = {
         L: this.L,
@@ -229,7 +259,7 @@ export default {
 
       let obj = {}
 
-       switch(true){
+      switch(true){
         case (this.type == 'Cantilever'):
           obj = new CantileverBeam(objData)
           break
@@ -247,8 +277,97 @@ export default {
           break
       }
 
+      //MEMBER ANALYSIS PARAMETERS
       this.params = obj.params()
 
+      //-----------------------------------------
+      //POSTIVE BENDING MEMBER CAPACITY
+      //------------------------------------------
+      //1. CONVERT UNBRACED LENGTH STRING TO ARRAY
+      let Lub_TF_Arr = map(split(this.Lub_TF,','), (x) => toNumber(x))
+      //2. TYPE OF UNBRACED LENGTH
+      if(Lub_TF_Arr.length == 1){
+        //UNIFORM UNBRACED LENGTH
+        if(Lub_TF_Arr[0] < this.L && Lub_TF_Arr[0] > 0){
+          //3. DETERMINE MEMBER CAPACITY
+          let Mcu = Math.random()*100
+          //4. CREATE PLOT ARRAY
+          this.capArrBot = [
+            {Lc: 0, Mc: Mcu},
+            {Lc: this.L, Mc: Mcu}
+          ]
+        }
+        //FULLY BRACED
+        else{
+          //3. DETERMINE MEMBER CAPACITY
+          let Mcb = Math.random()*10
+          //4. CREATE PLOT ARRAY
+          this.capArrBot = [
+            {Lc: 0, Mc: Mcb},
+            {Lc: this.L, Mc: Mcb}
+          ]
+        }
+      }
+      //MULTIPLE UNBRACED LENGTH
+      else{
+        //3. DETERMINE MEMBER CAPACITY ARRAY
+        let Mc_BF_Arr = Lub_TF_Arr.map(item => Math.random()*100)
+        //3. COMBINE ARRAY FOR CAPACITY AND UNBRACED LENGTH
+        this.capArrBot = zipWith(Lub_TF_Arr, Mc_BF_Arr,(Li, Mi)=>{
+              return {Lc: Li, Mc: Mi}
+        })
+      }
+
+      //-----------------------------------------
+      //NEGATIVE BENDING MEMBER CAPACITY
+      //------------------------------------------
+       //1. CONVERT UNBRACED LENGTH STRING TO ARRAY
+      let Lub_BF_Arr = map(split(this.Lub_BF,','), (x) => toNumber(x))
+      //2. TYPE OF UNBRACED LENGTH
+      if(Lub_BF_Arr.length == 1){
+        //UNIFORM UNBRACED LENGTH
+        if(Lub_BF_Arr[0] < this.L && Lub_BF_Arr[0] > 0){
+          //3. DETERMINE MEMBER CAPACITY
+          let Mcu = Math.random()*100
+          //4. CREATE PLOT ARRAY
+          this.capArrTop = [
+            {Lc: 0, Mc: Mcu},
+            {Lc: this.L, Mc: Mcu}
+          ]
+        }
+        //FULLY BRACED
+        else{
+          //3. DETERMINE MEMBER CAPACITY
+          let Mcb = Math.random()*10
+          //4. CREATE PLOT ARRAY
+          this.capArrTop = [
+            {Lc: 0, Mc: Mcb},
+            {Lc: this.L, Mc: Mcb}
+          ]
+        }
+      }
+      //MULTIPLE UNBRACED LENGTH
+      else{
+        //3. DETERMINE MEMBER CAPACITY ARRAY
+        let Mc_TF_Arr = Lub_BF_Arr.map(item => Math.random()*100)
+        //3. COMBINE ARRAY FOR CAPACITY AND UNBRACED LENGTH
+        this.capArrTop = zipWith(Lub_BF_Arr, Mc_TF_Arr,(Li, Mi)=>{
+              return {Lc: Li, Mc: Mi}
+        })
+      }
+
+      //-----------------------------------------
+      //SHEAR MEMBER CAPACITY
+      //------------------------------------------
+      //1. CONVERT UNBRACED LENGTH STRING TO ARRAY
+      let Lub_V_Arr = map(split(this.Lub_V,','), (x) => toNumber(x))
+      //1. CREATE MEMBER CAPACITY ARRAY FROM BOTTOM FLANGE UNBRACED LENGTH
+      let Vc_Arr = Lub_V_Arr.map(item => Math.random()*10)
+      //2. COMBINE ARRAY FOR CAPACITY AND UNBRACED LENGTH
+      this.capArrShear = zipWith(Lub_V_Arr, Vc_Arr,(Li, Vi)=>{
+            return {Lc: Li, Vc: Vi}
+        })
+    
     },//ANALYSIS
     sortedPL(){
       return this.PL.sort((a,b) => a.a - b.a)
@@ -257,6 +376,16 @@ export default {
   methods: {
     formatNumber(num, deci){
       return decimal(num, deci)
+    },
+    checkUnbracedLengthSum(str){
+      let arr = map(split(str,','), (x) => toNumber(x))
+      let total = arr.reduce((acc, x) => acc + x)
+      if(this.type == 'Overhang'){
+        return total == this.L + this.Lo ? false : true
+      }
+      else{
+        return total == this.L ? false : true
+      }
     },
     addPL(){
       let id = Math.floor(Math.random() * 10000)

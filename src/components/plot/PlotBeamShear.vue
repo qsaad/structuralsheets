@@ -25,8 +25,15 @@
         <text :x="params.rightTextX" :y="params.rightTextY" text-anchor="end" v-if="params.isRightText">{{ formatNumber(VR, 2) }} k </text>
         <text :x="params.rightTextX" :y="params.rightTextY -40" text-anchor="start" v-if="params.isRightText" v-if="VC != 0">{{ formatNumber(VC, 2) }} k </text>
         
-        <!-- MOMENT PLOT -->
+        <!-- SHEAR PLOT -->
         <path :d="plotPath(30,150, plotArr)" class="plotFill"/>
+
+        <g class="capacityFill" v-if="capArrShear.length > 1">
+          <!-- POSITIVE SHEAR CAPACITY PLOT -->
+          <rect :x="item.x" y="150" :width="item.width" :height="item.height"  v-for="item in plotCapacity(30, 150, capArrShear)" ></rect>
+          <!-- NEGATIVE SHEAR CAPACITY PLOT -->
+          <rect :x="item.x" y="150" :width="item.width" :height="item.height" v-for="item in plotCapacity(30, 150, capArrShear)" transform="scale(1,-1) translate(0,-300)"></rect>
+        </g>
         
         <!-- TITLE -->
         <text :x="titleX" :y="titleY" text-anchor="middle" class="titleText">{{ title }}</text>
@@ -50,6 +57,8 @@
     VL: { type: Number, default: 0},
     VR: { type: Number, default: 0},
     VC: { type: Number, default: 0},
+    //BEAM SHEAR CAPACITY
+    capArrShear: { type: Array, default: []}, //SHEAR CAPACITY ARRAY FOR POSITIVE BENDING MOMENT
   },
   data() {
     return {
@@ -189,24 +198,53 @@
     maxValue(){
       return Math.max(Math.abs(this.VL), Math.abs(this.VR), Math.abs(this.VC))
     },
-    plotPath(x, y, plotArr){
+    XSF(){
+      return 240/(this.L + this.Lo)
+    },//XSF
+    YSF(){
       switch(true){
-        case (this.maxValue() < 10):
-          this.SF = 5
+        case (this. maxValue() < 10):
+          return 5
           break
-        case (this.maxValue() < 40):
-          this.SF = 1
+        case (this. maxValue() < 40):
+          return 1
           break
-        case (this.maxValue() < 100):
-          this.SF = 0.5
+        case (this. maxValue() < 100):
+          return 0.5
           break
-        case (this.maxValue() > 100):
-          this.SF = 0.25
+        case (this. maxValue() > 100):
+          return 0.25
           break
       }
+    },//YSF
+    plotCapacity(x, y, arr){
+      let XF = this.XSF()
+      let YF = this.YSF()
+      let Lx = 0
+      
+        if(arr.length <= 1){
+          return{
+            x: x,
+            width: arr == undefined ? 0 : arr[0].Lc * XF,
+            height: arr == undefined ? 0 : arr[0].Vc * YF
+          }
+        }//IF
+        else{
+          return arr.map( (item, i, items) =>{
+            Lx = i == 0 ? x : Lx + items[i-1].Lc * XF
+            return{
+              x: Lx,
+              width: item == undefined ? 0 : item.Lc * XF,
+              height: item == undefined ? 0 : item.Vc * YF
+            }
+          })
+        }//ELSE
+    },//PLOT CAPACITY
 
-      let XF = 240/(this.L + this.Lo)
-      let YF = this.SF
+    plotPath(x, y, plotArr){
+      let XF = this.XSF()
+      let YF = this.YSF()
+
       let pathStr = `M ${x} ${y}`
     
       plotArr.forEach(item => pathStr += ` L ${(item.x*XF + x)} ${(item.y*YF + y)}`)
@@ -233,6 +271,14 @@
 .fixedSupport{
   stroke: #000;
   stroke-width: 5px; 
+}
+.capacityFill{
+  fill: #090; 
+  stroke: #090; 
+  stroke-width: 1px; 
+  fill-opacity: 0.1;
+  stroke-opacity: 1;
+  stroke-dasharray: 4 2;
 }
 .plotFill{
   fill: blue; 
